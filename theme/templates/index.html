@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content_title %}{% endblock %}
+{% block content %}
+{% for article in articles_page.object_list %}
+    {# First item #}
+    {% if loop.first and not articles_page.has_previous() %}
+        <article>
+            <header>
+                <h2><a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">{{ article.title }}</a></h2>
+                <p class="date">Posted on {{article.locale_date}} by {{article.author}}</p>
+            </header>
+            {{ article.content }}
+        </article>
+        {% if loop.length > 1 %}
+            <h1>Other Articles</h1>
+        {% endif %}
+    {# other items #}
+    {% else %}
+       <h4 class="blog-roll"><a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">{{ article.title }}</a></h4>
+       <p class="date">Posted on {{article.locale_date}} by {{article.author}}</p>
+    {% endif %}
+    {% if loop.last %}
+        {% if loop.last and (articles_page.has_previous() or not articles_page.has_previous() and loop.length > 1) %}
+            {% include 'pagination.html' %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
+
+{% endblock content %}

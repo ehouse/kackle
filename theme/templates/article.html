@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title|striptags }}{% endblock %}
+{% block content %}
+
+<article>
+  <header>
+  <h2><a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">{{ article.title}}</a></h2>
+  <p class="date">Posted on {{article.locale_date}} by {{article.author}} {% if article.modified %} <br /> Last modified: {{ article.modified | strftime('%B %d, %Y') }} {% endif %}</p>
+  </header>
+  {{ article.content }}
+</article>
+{% include 'twitter.html' %}
+
+{% endblock %}

@@ -1,0 +1,147 @@
+body {
+    font-size: 17px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font-weight: 300;
+}
+
+header {
+    margin-bottom: 1rem;
+}
+
+h1,h2 {
+    border-bottom: 1px solid #999;
+    font-family: 'Work Sans', sans-serif;
+}
+
+h3,h4,h5,h6 {
+    margin-bottom: .5rem;
+    font-family: 'Work Sans', sans-serif;
+}
+
+a {
+    color: #D9230F;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #91170A;
+    text-decoration: underline;
+}
+
+blockquote {
+    padding: 0 2.5rem;
+    margin-left: 0;
+    border-left: 5px solid #DDD;
+    font-weight: 100;
+}
+
+.article-list ul {
+    list-style-type: none;
+}
+
+.article-list ul li a {
+    font-size: 2.2rem;
+}
+
+/* @media(min-width: 600px) { */
+/*     .container { */
+/* 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
+/* 	padding: 2.5rem 3rem; */
+/* 	max-width: 1020px; 		/\*Up the max width so padding won't mess up page aspect*\/ */
+/* 	background-color: white; */
+/*     } */
+/*     html { */
+/* 	background: #FFF7F6 url("http://backgroundlabs.com/wp-content/uploads/2013/05/coffee-beans-background.jpg") no-repeat center center fixed; */
+/* 	-webkit-background-size: cover; */
+/* 	-moz-background-size: cover; */
+/* 	-o-background-size: cover; */
+/* 	background-size: cover; */
+/*     } */
+/* } */
+
+.highlight pre {
+    border: 1px solid #E1E1E1;
+    border-radius: 4px;
+    padding: 1.5rem;
+    background-color: #f5f5f5;
+    display: block;
+    white-space: pre;
+    font-size: 90%;
+}
+
+.date, .author {
+    margin-top: -1.0rem;
+    color: #808080;
+}
+
+.blog-roll {
+    border-bottom: 0;
+}
+
+#nav ul {
+    margin-bottom: 1rem;
+}
+
+#nav ul li {
+    display: inline-block;
+    margin: 0 2rem 0 0;
+}
+
+#nav a {
+    font-size: 2.8rem;
+}
+
+#headerImage img {
+    margin-bottom: 1.5rem;
+    max-width: 100%;
+    height: auto;
+}
+
+.footer {
+    text-align: center;
+    padding-top: 2.5rem;
+    color: #808080;
+    border-top: 2px solid #E1E1E1;
+
+}
+
+.footer ul {
+    margin: 0;
+}
+
+.footer ul li {
+    display: inline;
+    margin: 0 2rem;
+}
+
+.footer p {
+    margin: 0;
+}
+
+article p {
+    text-align: justify;
+}
+
+ul.pageNum {
+   list-style-type: none;
+   margin: 0 auto;
+   display: flex;
+   flex-grow: 1;
+   justify-content: space-between;
+   /*height: 40px;*/
+   width: 100%;
+}
+
+ul.pageNum > li {
+   flex-direction: row;
+   width: 100px;
+}
+
+ul.pageNum > li > a {
+   width: 100px;
+}
+
+ul.pageNum > li > p {
+   width: 80%;
+}
