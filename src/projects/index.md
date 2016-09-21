@@ -4,6 +4,10 @@ title: Projects
 
 <div class='article-list'>
 
+A collection of projets I've worked on over the ages. I try and write as much as
+I can about each one in the hopes of helping others past hurdles I may have come
+upon.
+
 ## Wiki
 I have a running wiki that I use to store information I constantly find myself
 searching for on the internet. Writing it down gives me a easy place to find it
