@@ -1,3 +1,9 @@
+---
+title: Test Post
+author: Ethan House
+date: Sep 21, 2016
+---
+
 # First Level Header
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas eu porta elit.
 Fusce scelerisque magna eu ipsum porta hendrerit ut et ligula. Morbi dictum urna

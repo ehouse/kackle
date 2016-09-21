@@ -34,41 +34,42 @@ search was until I got familiar with mu. Too intrusive for me however.
 
 ### My mu4e config
 
-    :::Lisp
-    (require 'mu4e)
-    (require 'smtpmail)
+```lisp
+(require 'mu4e)
+(require 'smtpmail)
 
-    ; System Settings
-    (setq message-send-mail-function 'smtpmail-send-it)
-    (setq mu4e-get-mail-command "offlineimap")
-    (setq mu4e-update-interval (* 10 60))
-    (setq user-full-name "Ethan House")
-    (setq mu4e-compose-signature "Ethan House")
+; System Settings
+(setq message-send-mail-function 'smtpmail-send-it)
+(setq mu4e-get-mail-command "offlineimap")
+(setq mu4e-update-interval (* 10 60))
+(setq user-full-name "Ethan House")
+(setq mu4e-compose-signature "Ethan House")
 
-    (setq mail-user-agent `mu4e-user-agent)
-    (setq message-kill-buffer-on-exit t)
+(setq mail-user-agent `mu4e-user-agent)
+(setq message-kill-buffer-on-exit t)
 
-    ; Bawls Mail
-    (setq smtpmail-starttls-credentials
-          '(("mail.ehouse.io" 587 nil nil))
-          user-mail-address "ehouse@ehouse.io"
-          smtpmail-smtp-server "mail.ehouse.io"
-          smtpmail-local-domain "ehouse.io"
-          smtpmail-smtp-service 587)
+; Bawls Mail
+(setq smtpmail-starttls-credentials
+      '(("mail.ehouse.io" 587 nil nil))
+      user-mail-address "ehouse@ehouse.io"
+      smtpmail-smtp-server "mail.ehouse.io"
+      smtpmail-local-domain "ehouse.io"
+      smtpmail-smtp-service 587)
 
-    ; Bawls Mail
-    (setq mu4e-maildir     "~/Maildir"         ;; top-level Maildir
-        mu4e-sent-folder   "/bawls/Sent"       ;; folder for sent messages
-        mu4e-drafts-folder "/bawls/Drafts"     ;; unfinished messages
-        mu4e-trash-folder  "/bawls/Trash"      ;; trashed messages
-        mu4e-refile-folder "/bawls/Archive")   ;; saved messages
+; Bawls Mail
+(setq mu4e-maildir     "~/Maildir"         ;; top-level Maildir
+    mu4e-sent-folder   "/bawls/Sent"       ;; folder for sent messages
+    mu4e-drafts-folder "/bawls/Drafts"     ;; unfinished messages
+    mu4e-trash-folder  "/bawls/Trash"      ;; trashed messages
+    mu4e-refile-folder "/bawls/Archive")   ;; saved messages
 
-    ; Render html in w3m. Requires w3m be installed.
-    (setq mu4e-html2text-command "w3m -T text/html")
+; Render html in w3m. Requires w3m be installed.
+(setq mu4e-html2text-command "w3m -T text/html")
 
-    ; Default IMAP behavior
-    (setq mu4e-sent-message-behavior 'delete)
+; Default IMAP behavior
+(setq mu4e-sent-message-behavior 'delete)
 
-    ; Disable threading and don't ask to quit.
-    (setq mu4e-headers-show-threads nil)
-    (setq mu4e-confirm-quit nil)
+; Disable threading and don't ask to quit.
+(setq mu4e-headers-show-threads nil)
+(setq mu4e-confirm-quit nil)
+```

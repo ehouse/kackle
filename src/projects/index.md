@@ -33,15 +33,16 @@ your own risk.
 Setting up and using Sieve for Dovecot 2.x. For users and Administrators.
 
 ## Presentations
-Presentations I've created and given.
+Presentations I've created and given. I personally use pandoc beamer with a
+custom beamer theme [Metropolis](https://github.com/matze/mtheme).
 
 - [Intro to Linux](https://files.ehouse.io/ehouse/presentations/intro_to_linux/intro_to_linux.html#/)  
-An intro to Linux OS with examples
+An intro to Linux OS with examples.
 
 - [Intro to Puppet](https://files.ehouse.io/ehouse/presentations/puppet/puppet.html#/)  
-An intro on how to use puppet for smallish infrastructures
+An intro on how to use puppet for smallish infrastructures.
 
 - [Simple Mail Server](https://files.ehouse.io/ehouse/presentations/simple_mail_server/simple_mail_server.html#/)  
-A simple fully functional mail server setup using OpenSMTD and Dovecot
+A simple fully functional mail server setup using OpenSMTD and Dovecot.
 
 </div>

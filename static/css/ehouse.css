@@ -129,3 +129,11 @@ ul.pageNum > li > a {
 ul.pageNum > li > p {
    width: 80%;
 }
+
+@media (max-width: 465px) {
+    #nav a { font-size: 2.4rem; }
+}
+
+@media (max-width: 420px) {
+    #nav a { font-size: 2.0rem; }
+}

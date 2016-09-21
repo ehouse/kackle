@@ -16,15 +16,14 @@ Macros can be thought of as variables. They can store either a single scalar val
 or an arrays of values separated by a comma and surrounded by curly braces. All
 scalars must be in quotes.
 
-	:::Bash
-	# TCP services to allow, either names from /etc/services or port numbers
-	tcp_services = "{http, https, ssh, 25565, 8123, 8080, 8000, 12345}"
-	# UDP Services to allow, either names from /etc/services or port numbers
-	udp_services = "{domain, 60000:60010}"
+    # TCP services to allow, either names from /etc/services or port numbers
+    tcp_services = "{http, https, ssh, 25565, 8123, 8080, 8000, 12345}"
+    # UDP Services to allow, either names from /etc/services or port numbers
+    udp_services = "{domain, 60000:60010}"
 
-	# Macro of the primary interface
-	ext_if="bce1"
-	jail_if="lo1"
+    # Macro of the primary interface
+    ext_if="bce1"
+    jail_if="lo1"
 
 Pretty much the same as before, except now I have a section for mosh. I use PF's
 colon operator to give me a range of ports, 60000 through 60010.
@@ -35,25 +34,21 @@ Tables are similar to macro groups except they can be edited without restarting
 PF. Great for blacklists or whitelists. Tables can only store Ip addresses though,
 limiting there use.
 
-	:::Bash
-	table <whitelist> { 11.22.33.44, 123.45.67.89 }
+    table <whitelist> { 11.22.33.44, 123.45.67.89 }
 
 I've created a whitelist that will be quickly passed though, preventing other rules
 from being applied. Good for the accidental screw up. I don't have a blacklist
 table because I use denyhosts.  
 
-	:::Bash
     pfctl -t whitelist -T add 192.168.0.0/16
 
 Cidr notation is also accepted in tables.
-
 
 ### Traffic Normalization
 
 Scrub guarantees that all traffic passed into the filter section is not fragmented. Packets
 that are fragmented are put into a buffer to wait until the rest of the packet arrives.
 
-	:::Bash
 	# Scrubs packets for possible issues. All Trafic is reassembled. Might cause
 	# issues for games and NFS
 	scrub in on $ext_if all fragment reassemble
@@ -61,8 +56,7 @@ that are fragmented are put into a buffer to wait until the rest of the packet a
 Be cautious with scrub rules. They can cause issues with games and NFS traffic.
 To log a rules effect add "log" after the in or out keyword as such.
 
-	:::Bash
-	scrub in log on $ext_if all fragment reassemble
+    scrub in log on $ext_if all fragment reassemble
 
 ### Filtering
 
@@ -72,7 +66,6 @@ trafic with a destination address of 255.255.255.255. It's commented it out thou
 most of the broadcast traffic I was getting was from UPnP. Not allowing
 UPnP(udp 1900, tcp 5000) is easier.
 
-	:::Bash
 	# Block all traffic by default
 	block all
 
@@ -101,22 +94,23 @@ UPnP(udp 1900, tcp 5000) is easier.
 Lots of commands are available to do just about everything under the sun with pf.
 I've listed below some of the more useful commands I've found.
 
-	:::Bash
-	# Realtime logging from pglog0 device
-	tcpdump -n -e -ttt -i pflog0
-	# realtime logging from pf log file
-	tcpdump -n -e -ttt -r /var/log/pflog
+```bash
+# Realtime logging from pglog0 device
+tcpdump -n -e -ttt -i pflog0
+# realtime logging from pf log file
+tcpdump -n -e -ttt -r /var/log/pflog
 
-	# parse ruleset for errors, does not load
-	pfctl -vnf /etc/pf.conf
-	# maintain state and reload config
-	pfctl -f /etc/pf.conf
-	# same thing as above, just easier to remember
-	service pf reload
+# parse ruleset for errors, does not load
+pfctl -vnf /etc/pf.conf
+# maintain state and reload config
+pfctl -f /etc/pf.conf
+# same thing as above, just easier to remember
+service pf reload
 
-	# List loaded rules
-	pfctl -sr
-	# View state table
-	pfctl -ss
-	# List everything
-	pfctl -sa
+# List loaded rules
+pfctl -sr
+# View state table
+pfctl -ss
+# List everything
+pfctl -sa
+```
