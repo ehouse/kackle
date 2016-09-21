@@ -41,24 +41,8 @@ blockquote {
 }
 
 .article-list ul li a {
-    font-size: 2.2rem;
+    font-size: 2.0rem;
 }
-
-/* @media(min-width: 600px) { */
-/*     .container { */
-/* 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
-/* 	padding: 2.5rem 3rem; */
-/* 	max-width: 1020px; 		/\*Up the max width so padding won't mess up page aspect*\/ */
-/* 	background-color: white; */
-/*     } */
-/*     html { */
-/* 	background: #FFF7F6 url("http://backgroundlabs.com/wp-content/uploads/2013/05/coffee-beans-background.jpg") no-repeat center center fixed; */
-/* 	-webkit-background-size: cover; */
-/* 	-moz-background-size: cover; */
-/* 	-o-background-size: cover; */
-/* 	background-size: cover; */
-/*     } */
-/* } */
 
 .highlight pre {
     border: 1px solid #E1E1E1;

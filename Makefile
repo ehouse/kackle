@@ -2,7 +2,7 @@ WEBDIR = /home/ehouse/public_html/
 TEST_WEBDIR = /home/ehouse/public_html/webtest/
 WEBSERVER = bawls.ehouse.io
 
-MD_FILES := $(shell find src "*.md")
+MD_FILES := $(shell find src -name "*.md")
 HTML_BLD := $(patsubst src/%.md, out/%.html, $(MD_FILES))
 
 all: test-build

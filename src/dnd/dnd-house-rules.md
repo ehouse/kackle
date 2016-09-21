@@ -12,13 +12,13 @@ to cherry pick rules to your own groups play style.
 Critical rolls (1 or 20) during combat act as a -10 or +10 for the roll
 respectively. A critical roll can not make the impossible happen. So if you roll
 a Natural 20 the die roll becomes a 30. If you roll a Natural 1 the die roll
-becomes a -10.
+becomes a -9.
 
 > __eg.__ 1000 peasants dealing on average 25 criticals a round can not kill an
 > adult dragon.
 
 Critical rolls out of combat count as a -5 or a +5 to the roll. So a Natural 20
-would be a die roll of 25 and a Natural 1 would be a die roll of -5.
+would be a die roll of 25 and a Natural 1 would be a die roll of -4.
 
 ### Heal Check
 I've always wished there was more to the heal check. Spell casters are really
@@ -67,47 +67,38 @@ A small set of rules that work with insanity and loss of mental status. The
 system works on a scale of 0 to 10 where 0 is normal and 10 is blithering idiot.
 
 Every character starts at zero unless they wish otherwise for back story
-reasons.  Any character that witnesses a horrific action has a chance to moving
+reasons. Any character that witnesses a horrific action has a chance to moving
 up the scale. There is a DC to save based on the significance of the horror that
 was witnessed based on the table below. When a character moves up the scale the
 character is _shaken for 1d4 hours_. A Critical Fail leaves character _panicked for
 1d4 minutes_ or until away from the source of the save. Major DM discretion is
 required when determining which save to use.
 
-| Horror | DC Will Save | Example                                 |
-|--------|--------------|-----------------------------------------|
-| Minor  | 15           | Near life/death situation or jump scare |
-| Medium | 20           | Family or friend died tragically        |
-| Major  | 25           | Witness a massacre                      |
+Horror  DC Will Save   Example
+------  -------------  ----------------------------------------
+Minor   15             Near life/death situation or jump scare
+Medium  20             Family or friend died tragically
+Major   25             Witness a massacre
+
+Table: Horror DC Saves
 
 Insanity can be reversed in a few ways. Normal rules for Types of Insanity still
 apply and a character may attempt to reverse the effects once a week by beating
 the Will Save. When a successful save occurs a point of insanity is also
-removed. Any character my attempt to remove a single point of insanity from a
-character. This save may only be attempted once per character per day. It
-requires one hour of uninterupted quiet and has a DC of _10 + Characters insanity
-score_.
+removed. Any character may attempt to remove a single point of insanity from a
+character with a successful heal save. This save may only be attempted once per
+character per day. It requires one hour of uninterrupted quiet and has a DC of
+_10 + Characters Insanity Score_.
 
-__Insanity of 0__
-: Perfectly normal. There are no adverse effects for being here.
+Insanity Score  Effect
+--------------  ------
+0               Perfectly normal. There are no adverse effects for being here.
+1-3             Characters that are odd or have occasional outbursts. From this point forward add your Insanity Score to resist mind altering effects. Your Insanity Score is the penalty to add to Perception Check and Sense Motive.
+4-6             Characters that are generally unstable and have frequent outbursts. At this point add Insanity Score to Will Saves.
+7-9             Characters that have brief moments of lucid action. Each step forward in this and following categories requires the character to roll for a [Type of Insanity](http://paizo.com/pathfinderRPG/prd/gameMasteryGuide/sanityAndMadness.html).
+10              Characters are never in control of their own actions. If not cured character is considered out of play in a similar vein as death. They are as much a danger to them selves as they are to the rest of the party.
 
-__Between 1-3__
-: Characters that are odd or have occasional outbursts.
-From this point forward add your insanity score to resist mind altering effects.
-Your insanity score is the penalty to add to Perception Check and Sense Motive.
-
-__Between 4-6__
-: Characters that are generally unstable and have
-frequent outbursts.  Each step forward in this and following categories requires
-the character to roll for a [Type of Insanity](http://paizo.com/pathfinderRPG/prd/gameMasteryGuide/sanityAndMadness.html).
-
-__Between 7-9__
-: Characters that have brief moments of lucid action.
-
-__Insanity of 10__
-: Characters are never in control of their own actions. If
-not cured character is considered out of play in a similar vein as death. They
-are as much a danger to them selves as they are to the rest of the party.
+Table: Insanity Scores and Effects
 
 ## Points of Interest
 ### Back Story
@@ -122,6 +113,8 @@ happy.
 
 You must inform the DM at least once of your non-standard race. If you have four
 legs and you don't tell the DM, he will remove two of them.
+
+> __eg.__ Oh, I'm playing a Centaur. What? Didn't I tell you?
 
 ### Sexy Characters
 
