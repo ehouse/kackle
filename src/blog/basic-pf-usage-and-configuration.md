@@ -1,7 +1,7 @@
 ---
 title: Basic PF Configuration
 author: Ethan House
-date: February 2, 2013
+date: February 13, 2014
 summary: FreeBSD PF and config examples. Quick and useful commands with explanations for what they do.
 ---
 
