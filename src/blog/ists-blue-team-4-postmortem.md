@@ -1,8 +1,8 @@
 ---
-title: ISTS Blue Team 4 Postmortem
+title: ISTS 2016 Blue Team 4 Postmortem
 author: Ethan House
 date: March 27, 2016
-summary: My thoughts on RIT's ISTS competition.
+summary: My thoughts on RIT's 2016 ISTS competition.
 ---
 
 This past weekend I participated in a hacking competition Information Security
@@ -40,7 +40,7 @@ and smtp so everything was blocked except for port 25 and 110.
 
 Stick to what you need in the long run. We did not have the control we liked on
 our cloud infrastructure so we moved as much as we could to our local esxi
-server. Our build server ran a alpine linux instance with ssh and our AD server
+server. Our build server ran a alpine Linux instance with ssh and our AD server
 was just DNS. The scoring engine only cared that they were available, not that
 they were usable. We actually had people on red and white team complain to us at
 how difficult it was to get at these boxes and that feels like a victory to me.

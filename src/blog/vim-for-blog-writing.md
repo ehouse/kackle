@@ -2,7 +2,7 @@
 title: Vim for Blog Writing
 author: Ethan House
 date: November 19, 2015
-summary: Quite a lot of issues I had writing blog posts in Vim were solved with a few config edits. 
+summary: Quite a lot of issues I had writing blog posts in Vim were solved with a few config edits.
 ---
 
 For a while I was using IDE's like Atom or Sublime to write my blog posts but I

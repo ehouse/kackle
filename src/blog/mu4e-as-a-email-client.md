@@ -2,6 +2,7 @@
 title: mu4e as a Email Client
 author: Ethan House
 date: July 3, 2015
+summary: A breakdown and config of my mu4e config I've been using recently. It's backed with emacs and uses mu as a powerful filtering language.
 ---
 
 A coworker told me about this awesome life changing mail client called mu4e so

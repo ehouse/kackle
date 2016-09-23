@@ -2,6 +2,7 @@
 title: Easy Server Naming Scheme
 author: Ethan House
 date: March 3, 2016
+summary: Too much time and effort is spent coming up with creative and unique server names. This method will cut down on the wasted effort and remove the confusion as well!
 ---
 
 Coming up with names for servers or VM's can be pretty difficult. Often times

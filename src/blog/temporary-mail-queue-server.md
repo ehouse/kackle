@@ -2,6 +2,7 @@
 title: Temporary Mail Queue Server
 author: Ethan House
 date: June 21, 2015
+summary: Useful if you're primary infrastructure fails and you're looking at days of downtime. This will accept any and all mail at this moment and will feed it back into your mailserver once it's back online. This should be a last resort and only used if losing mail is a possibility. 
 ---
 
 I needed to stand up a temporary queue server to store mail while our primary

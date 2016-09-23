@@ -2,6 +2,7 @@
 title: Automating Ports with Poudriere
 author: Ethan House
 date: September 9, 2014
+summary: Automating the building of FreeBSD Ports in jails. A fun weekend project I setup on a few servers.
 ---
 
 While pkg-ng is good for simple FreeBSD setups it rarely fits all of my needs. Eventually you'll need a package with

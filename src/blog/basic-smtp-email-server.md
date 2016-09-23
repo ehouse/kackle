@@ -2,6 +2,7 @@
 title: Basic SMTP Email Server
 author: Ethan House
 date: November 5, 2014
+summary: Summary and setup of a fully featured OpenSMTP mail server.
 ---
 
 Running your own mail server can seem intimidating at first but once the

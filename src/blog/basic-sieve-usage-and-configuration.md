@@ -2,7 +2,7 @@
 title: Basic Sieve Usage and Configuration
 author: Ethan House
 date: June 22, 2015
-summary: A quick guide to setting up and using sieve for Dovecot 2.x email servers. 
+summary: A quick guide to setting up and using sieve for Dovecot 2.x email servers.
 ---
 
 ### Setting up Sieve Access

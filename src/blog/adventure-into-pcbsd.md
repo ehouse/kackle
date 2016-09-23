@@ -2,6 +2,7 @@
 title: Adventure Into PCBSD
 author: Ethan House
 date: September 9, 2015
+summary: More adventures into the depths of FreeBSD and it's derivatives. This one didn't go so well.
 ---
 
 While popping around the BSD community I keep hearing about PCBSD.

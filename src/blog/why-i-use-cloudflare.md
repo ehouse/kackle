@@ -2,6 +2,7 @@
 title: Why I use Cloudflare
 author: Ethan House
 date: September 19, 2013
+summary: Why I recently started using CloudFlare and why you should too!
 ---
 
 A [friend](http://worrbase.com/) of mine recently showed me a service called

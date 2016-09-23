@@ -2,6 +2,7 @@
 title: OpenBSD and LibreSSL
 author: Ethan House
 date: April 26, 2014
+summary: My thoughts on the recent OpenSSL nonsense.
 ---
 
 I've always been impressed by the OpenBSD project. The developers do what is

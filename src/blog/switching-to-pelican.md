@@ -2,6 +2,7 @@
 title: Switching to Pelican
 author: Ethan House
 date: October 30, 2013
+summary: Thoughts on switching blogging frameworks.
 ---
 
 I have become increasingly frustrated with octopress and its complexities. The

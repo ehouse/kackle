@@ -2,6 +2,7 @@
 title: Basic PF Configuration
 author: Ethan House
 date: February 2, 2013
+summary: FreeBSD PF and config examples. Quick and useful commands with explanations for what they do.
 ---
 
 After a brief mishap with partition tables and ZFS and FreeBSD are finally setup

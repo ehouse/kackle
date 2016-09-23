@@ -2,7 +2,7 @@
 title: OpenBSD X11 Setup
 author: Ethan House
 date: September 9, 2013
-summary: My personal working setup for my OpenBSD laptop running on my Thinkpad x230.
+summary: My personal working setup for my OpenBSD laptop running on my Thinkpad x230. All of this can also be found on my [Github](https&#58;//github.com/ehouse/dotfiles).
 ---
 
 This is my personal setup for my openbsd laptop. I use i3 as my window manager

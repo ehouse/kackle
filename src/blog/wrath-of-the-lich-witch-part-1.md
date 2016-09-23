@@ -2,7 +2,7 @@
 title: Wrath of the Lich Witch Part 1
 author: Ethan House
 date: November 24, 2014
-summary: A side quest I ran when we were down a few players turned into one of the more exciting game's I've GM'ed. 
+summary: A side quest I ran when we were down a few players turned into one of the more exciting game's I've GM'ed.
 ---
 
 ### Side Quest
