@@ -20,7 +20,7 @@ done
 }
 
 function sort_dir {
-    extract_directory | gsort -k3nr -k2Mr -k1n
+    extract_directory | gsort -k3nr -k2Mr -k1nr
 }
 
 function write_blogroll {

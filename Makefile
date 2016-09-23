@@ -7,6 +7,10 @@ HTML_BLD := $(patsubst src/%.md, out/%.html, $(MD_FILES))
 
 all: test-build
 
+new-port:
+
+publish-post:
+
 test-build: $(HTML_BLD)
 	cp -r $(wildcard static/*) out/
 	cp -r license.txt out/
