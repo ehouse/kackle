@@ -1,22 +1,17 @@
 #!/bin/bash
 
 function write_header {
-    echo "---"
-    for var in "$@"
-    do
-        echo "$var"
-    done
-    echo "---"
-    echo
+    echo $@ | ../../scripts/write_headers.awk
 }
 
-function extract_directory {
 # Gathers file data from a directory
-for f in *.md
-do
-    data=`cat $f | ../../include/extract_headers.awk`
-    echo $data:$f
-done
+function extract_directory {
+    for f in *.md
+    do
+        #data=`cat $f | ../../scripts/extract_headers.awk`
+        ../../scripts/extract_headers.awk $f
+        #echo $data:$f
+    done
 }
 
 function sort_dir {

@@ -7,7 +7,7 @@ HTML_BLD := $(patsubst src/%.md, out/%.html, $(MD_FILES))
 
 all: test-build
 
-new-port:
+new-post:
 
 publish-post:
 
@@ -16,6 +16,7 @@ test-build: $(HTML_BLD)
 	cp -r license.txt out/
 
 build: $(HTML_BLD)
+	./scripts/local.sh
 	cp -r $(wildcard static/*) out/
 	cp -r license.txt out/
 	find out -name "*.html" -or -name "*.css" -exec htmlcompressor --compress-js --compress-css {} -o {} \;
