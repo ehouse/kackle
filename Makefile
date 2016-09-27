@@ -8,8 +8,7 @@ HTML_BLD := $(patsubst src/%.md, out/%.html, $(MD_FILES))
 all: test-build
 
 new-post:
-
-publish-post:
+	@./scripts/write_post.sh
 
 test-build: $(HTML_BLD)
 	cp -r $(wildcard static/*) out/
@@ -37,4 +36,4 @@ devserver: all
 clean:
 	rm -rf $(wildcard out/*)
 
-.PHONY: all deploy test-deploy clean test-build build
+.PHONY: all deploy test-deploy clean test-build build new-post
