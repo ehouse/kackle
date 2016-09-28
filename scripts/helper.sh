@@ -24,5 +24,6 @@ function write_blogroll {
     printf "<h4 class=\"blog-roll\"> [%s](./%s) </h4>\n", $2, $4
     printf "<p class=\"date\">Written on %s by Ethan House</p>\n\n", $1
     if ($3)
-        printf "%s\n\n", $3 }'
+        printf "%s\n\n", $3
+    print "---\n"}'
 }

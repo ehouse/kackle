@@ -5,7 +5,7 @@ date: November 24, 2014
 summary: A side quest I ran when we were down a few players turned into one of the more exciting game's I've GM'ed.
 ---
 
-### Side Quest
+## Side Quest
 
 Everyone was absent, so I decided to run a one-off I've been cooking in my head. It went better than expected.
 
@@ -17,7 +17,7 @@ Everyone was absent, so I decided to run a one-off I've been cooking in my head.
  - Rob (AFK) : Orana the Witch
  - Derek (AFK) : Belanthas the Cleric
 
-### The Adventure Begins...
+## The Adventure Begins...
 
 #### At the Rusty Dragon
 
@@ -132,7 +132,7 @@ horses and ponies and rode off into the hills anxious for the battle that was
 soon to come. The chanting could still be heard as the town disappeared from
 view.
 
-### Within the Tickwood Forest
+#### Within the Tickwood Forest
 
 The party rode through the hillside and into the sparse outer forest. The dense
 forest was fresh with new growth but was surprisingly quiet.
@@ -166,4 +166,4 @@ with goblins.
 
 And with that the newly formed party was off.
 
-To be continued in [Part 2](/wrath-of-the-lich-witch-part-2.html).
+To be continued in [Part 2](/posts/wrath-of-the-lich-witch-part-2.html).

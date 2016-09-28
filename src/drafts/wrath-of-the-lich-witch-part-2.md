@@ -4,7 +4,7 @@ category: dnd-story
 summary: The final showdown between the brave adventurers and the evil Lich. One thing is for certain, no one is getting out of this without some bruises and a good story.
 status: draft
 
-If you missed it you should read [Part 1](/wrath-of-the-lich-witch-part-1.html) first.
+If you missed it you should read [Part 1](/posts/wrath-of-the-lich-witch-part-1.html) first.
 
 ## The epic showdown
 
@@ -14,7 +14,7 @@ to die. The cards were stacked against them.
 
 
 ## The Adventure  Continues...
-### Hot on the trail
+#### Hot on the trail
 
 The party continued riding through the forest following the trail of destruction
 left by their lichified friend. Trees lay to side tossed away carelessly like
@@ -35,7 +35,7 @@ the party to line up behind him. They were all going in, the only question was
 how many would leave. In the distance a flock of crows took to the sky only
 confirming the danger and carnage they were about to walk into.
 
-### Preparing for battle
+#### Preparing for battle
 
 Arron pushed open the door and walked in slowly with his sword drawn and ready.
 The rest of the group followed closely behind. The tower, clearly abandoned
@@ -76,7 +76,7 @@ Alchemist Fires and handing them out like candy.
 The rest of the party was too enamored with the Alchemist Fire to disagree with
 Frank.
 
-### Into the breach
+#### Into the breach
 
 They lined up behind the last door. This was it, either they walked out of here
 with Rob or they didn't walk out of here at all. All or nothing.
@@ -95,7 +95,7 @@ could find. One by one they all threw there Alchemists Fire potions at the
 monster. The Lich had up to this point not taken it's adversaries seriously.
 More excited to have lives to toy with.
 
-### Mistakes and Fire
+#### Mistakes and Fire
 
 Things went bad almost immediately. Frank attempted to release an arrow right
 into the Lich's temple but the bowstring snapped and sent the arrow skidding off

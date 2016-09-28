@@ -36,12 +36,26 @@ blockquote {
     font-weight: 100;
 }
 
-.article-list ul {
-    list-style-type: none;
+article p {
+    text-align: justify;
 }
 
-.article-list ul li a {
-    font-size: 2.0rem;
+nav ul {
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+nav ul li {
+    display: inline-block;
+    margin: 0 2rem 0 0;
+}
+
+nav a {
+    font-size: 2.8rem;
+}
+
+.article-list ul {
+    list-style-type: none;
 }
 
 .highlight pre {
@@ -62,71 +76,30 @@ blockquote {
     border-bottom: 0;
 }
 
-#nav ul {
-    margin-bottom: 1rem;
-}
-
-#nav ul li {
-    display: inline-block;
-    margin: 0 2rem 0 0;
-}
-
-#nav a {
-    font-size: 2.8rem;
-}
-
 #headerImage img {
     margin-bottom: 1.5rem;
     max-width: 100%;
     height: auto;
 }
 
-.footer {
+#footer {
     text-align: center;
     padding-top: 2.5rem;
     color: #808080;
     border-top: 2px solid #E1E1E1;
-
 }
 
-.footer ul {
+#footer ul {
     margin: 0;
 }
 
-.footer ul li {
+#footer ul li {
     display: inline;
     margin: 0 2rem;
 }
 
-.footer p {
+#footer p {
     margin: 0;
-}
-
-article p {
-    text-align: justify;
-}
-
-ul.pageNum {
-   list-style-type: none;
-   margin: 0 auto;
-   display: flex;
-   flex-grow: 1;
-   justify-content: space-between;
-   /*height: 40px;*/
-   width: 100%;
-}
-
-ul.pageNum > li {
-   flex-direction: row;
-   width: 100px;
-}
-
-ul.pageNum > li > a {
-   width: 100px;
-}
-
-ul.pageNum > li > p {
-   width: 80%;
 }
 
 @media (max-width: 465px) {
@@ -135,4 +108,24 @@ ul.pageNum > li > p {
 
 @media (max-width: 420px) {
     #nav a { font-size: 2.0rem; }
+}
+
+@media (max-width: 550px) {
+    nav ul {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+
+    nav ul li {
+        flex-grow: 1;
+        text-align: center;
+        display: inline-block;
+        margin: 0 2rem 0 0;
+    }
+
+    nav a {
+        font-size: 2rem;
+    }
 }
