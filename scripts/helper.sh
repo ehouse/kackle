@@ -1,23 +1,26 @@
 #!/bin/bash
 
+### Helper Functions for kackle
+
+# Separates headers by ; and prints yaml
 function write_header {
     echo $@ | ../../scripts/write_headers.awk
 }
 
-# Gathers file data from a directory
+# Walks directory extracting yaml header information
 function extract_directory {
     for f in *.md
     do
-        #data=`cat $f | ../../scripts/extract_headers.awk`
         ../../scripts/extract_headers.awk $f
-        #echo $data:$f
     done
 }
 
+# Sorts files by date attribute by year, month, date
 function sort_dir {
     extract_directory | gsort -k3nr -k2Mr -k1nr
 }
 
+# Creates blogroll from date sorted directory
 function write_blogroll {
     sort_dir | awk -F ':' \
     '{ gsub(".md",".html");

@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+### Generates sitemap from all html files in out/ folder
+
 find out -name "*.html" | sed "s/out\//https:\/\/$1\//" | awk -F"\n" \
     'BEGIN { print \
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \

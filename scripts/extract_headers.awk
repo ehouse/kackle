@@ -1,6 +1,6 @@
 #!/usr/bin/awk -f
 
-# Parses file for yaml data. Returns that data in an easily parsable format.
+### Parses file for yaml data. Returns that data in an easily parsable format.
 
 BEGIN       { FS=": " }
 
