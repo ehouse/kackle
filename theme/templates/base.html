@@ -14,7 +14,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="/css/normalize.css">
-    <link rel="stylesheet" type="text/css" href="/css/skeleton.css">
     <link rel="stylesheet" type="text/css" href="/css/ehouse.css">
     <link href="/css/kate.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Raleway&#124;Work+Sans" rel="stylesheet">
@@ -39,14 +38,14 @@
             <header>
                 <!--<h1><a id="p_title" rel="bookmark" title="Permalink to $title$">$title$</a></h1>-->
                 <h1>$title$</h1>
-                <p class="date">
-                $if(date)$
-                Posted on $date$
-                $endif$
-                $if(author)$
-                Written by $author$
-                $endif$
-                </p>
+                <p class="post-header"><small>
+                    $if(author)$
+                    <span><strong>Written by $author$</strong></span>
+                    $endif$
+                    $if(date)$
+                    <time>Posted on $date$</time>
+                    $endif$
+                </small></p>
             </header>
 $body$
         </article>
