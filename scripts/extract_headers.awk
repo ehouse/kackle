@@ -5,7 +5,7 @@
 BEGIN       { FS=": " }
 
 /title:/    { title = $2 }
-/date:/     { ("gdate +\"%d %B, %Y\" -d'"$2"'" | getline date) }
+/date:/     { ("gdate +\"%B %d, %Y\" -d'"$2"'" | getline date) }
 /summary:/  { summary = $2 }
 
 END         { printf "%s:%s:%s:%s\n", date, title, summary, FILENAME }

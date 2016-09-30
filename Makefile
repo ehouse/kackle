@@ -22,7 +22,8 @@ build: $(HTML_BLD) out/sitemap.xml
 	cp -r static/css static/img out/
 	cp static/robots-prod.txt out/robots.txt
 	cp -r license.txt out/
-	find out -name "*.html" -or -name "*.css" -exec htmlcompressor --compress-js --compress-css {} -o {} \;
+	find out \( -name "*.html" -or -name "*.css" \) -exec htmlcompressor --compress-js --compress-css {} -o {} \;
+	find out \( -name "*.html" -or -name "*.css" \) -exec gzip {} \;
 
 deploy: clean build
 	rsync -e ssh -P -rvzc --delete out/ $(WEBSERVER):$(WEBDIR) --cvs-exclude
@@ -40,7 +41,7 @@ out/%.html: src/%.md Makefile
 	@mkdir -p $(dir $@)
 	pandoc --template theme/templates/base.html $< -o $@
 
-out/sitemap.xml:
+out/sitemap.xml: Makefile
 	./scripts/sitemap.sh $(SITENAME) > out/sitemap.xml
 
 .PHONY: all new-post standalone test-build build deploy test-deploy devserver clean
