@@ -1,0 +1,62 @@
+#!/bin/bash -eu
+
+function compile-folder {
+    if ! [[ ${1: -5} == ".html" ]]; then
+        echo "$1 must be an html file.\n"
+        exit 1
+    fi
+
+    if [[ -d $2 ]]; then
+        MD_FILES=($(find $2 -name "*.md"))
+        BLD_FILES=($(sed "s/src/out/g;s/\.md/\.html/g" <<< ${MD_FILES[@]}))
+    else
+        echo "$2 must be a directory.\n"
+        exit 1;
+    fi
+
+    for ((i=0; i<${#BLD_FILES[@]};++i)); do
+        mkdir -p $(dirname "${BLD_FILES[i]}")
+        printf " BUILD %s -> %s\n" "${MD_FILES[i]}" "${BLD_FILES[i]}"
+        pandoc --template $1 "${MD_FILES[i]}" -o "${BLD_FILES[i]}"
+    done
+
+    project_dest=$(sed "s/src/out/g" <<< $2)
+
+    for i in $2/static/*; do
+        printf " COPY %s -> %s\n" $i $project_dest/$(basename $i)
+        cp -r "$i" "$project_dest/$(basename $i)"
+    done
+}
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        -v|--verbose)
+            set -v
+            shift
+            ;;
+
+        -d|--debug)
+            set -x
+            shift
+            ;;
+
+        -h|--help)
+            echo "$0 build TEMPLATE FOLDER"
+            exit
+            ;;
+
+        build)
+            compile-folder $2 $3
+            exit
+            ;;
+
+        test)
+            "$(dirname $0)/local.sh"
+            exit
+            ;;
+        *)
+            echo "usage: kackle [-vd] [-h] command args..."
+            exit
+            ;;
+    esac
+done
