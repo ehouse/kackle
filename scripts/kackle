@@ -1,5 +1,7 @@
 #!/bin/bash -eu
 
+PROD=1
+
 function compile-folder {
     if ! [[ ${1: -5} == ".html" ]]; then
         echo "$1 must be an html file.\n"
@@ -26,32 +28,60 @@ function compile-folder {
         printf " COPY %s -> %s\n" $i $project_dest/$(basename $i)
         cp -r "$i" "$project_dest/$(basename $i)"
     done
+
+    if ! [[ $PROD ]];then
+        printf " CREATE DEV robots.txt -> %s\n" "$project_dest/robots.txt"
+        echo -e "User-Agent: *\nDisallow: /" > "$project_dest/robots.txt"
+    else
+        printf " CREATE PROD robots.txt -> %s\n" "$project_dest/robots.txt"
+        echo -e "User-Agent: *\nDisallow: /drafts/" > "$project_dest/robots.txt"
+    fi
+}
+
+function create-blogroll {
+    echo "test"
+}
+
+function create-sitemap {
+    if ! [[ -d $1 ]];then
+        echo "$1 must be a folder\n"
+        exit 1
+    fi
+
+    printf " CREATE sitemap.xml -> $1/sitemap.xml\n"
+    find $1 -name "*.html" | sed "s@$1/@https://$2/@g" | awk -F"\n" \
+'BEGIN { print "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
+    <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" \
+    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \
+    xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 \
+    http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">" }
+{ printf "<url>\n\t<loc>%s</loc>\n\t<changefreq>weekly</changefreq>\n</url>\n", $NF }
+END { print "</urlset>"}' >> $1/sitemap.xml
 }
 
 while [ $# -gt 0 ]; do
     case $1 in
-        -v|--verbose)
-            set -v
-            shift
-            ;;
-
         -d|--debug)
             set -x
             shift
             ;;
-
         -h|--help)
             echo "$0 build TEMPLATE FOLDER"
             exit
             ;;
-
+        -t)
+            PROD=0
+            ;;
+        -v|--verbose)
+            set -v
+            shift
+            ;;
         build)
             compile-folder $2 $3
             exit
             ;;
-
-        test)
-            "$(dirname $0)/local.sh"
+        sitemap)
+            create-sitemap $2 $3
             exit
             ;;
         *)
