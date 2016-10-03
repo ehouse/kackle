@@ -22,10 +22,10 @@ build:
 	find out \( -name "*.html" -or -name "*.css" \) -exec gzip {} \;
 
 deploy: clean build
-	rsync -e ssh -P -rvzc --delete out/ $(WEBSERVER):$(WEBDIR) --cvs-exclude
+	rsync -e ssh -P -rvzc --delete out/personal-site/ $(WEBSERVER):$(WEBDIR) --cvs-exclude
 
 test-deploy: clean test-build
-	rsync -e ssh -P -rvzc --delete out/ $(WEBSERVER):$(TEST_WEBDIR) --cvs-exclude
+	rsync -e ssh -P -rvzc --delete out/personal-site/ $(WEBSERVER):$(TEST_WEBDIR) --cvs-exclude
 
 devserver:
 	pushd out/personal-site/; python -m SimpleHTTPServer 8000; popd

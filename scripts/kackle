@@ -18,23 +18,23 @@ function compile-folder {
 
     for ((i=0; i<${#BLD_FILES[@]};++i)); do
         mkdir -p $(dirname "${BLD_FILES[i]}")
-        printf " BUILD %s -> %s\n" "${MD_FILES[i]}" "${BLD_FILES[i]}"
         pandoc --template $1 "${MD_FILES[i]}" -o "${BLD_FILES[i]}"
+        printf " BUILD %s -> %s\n" "${MD_FILES[i]}" "${BLD_FILES[i]}"
     done
 
     project_dest=$(sed "s/src/out/g" <<< $2)
 
     for i in $2/static/*; do
-        printf " COPY %s -> %s\n" $i $project_dest/$(basename $i)
         cp -r "$i" "$project_dest/$(basename $i)"
+        printf " COPY %s -> %s\n" $i $project_dest/$(basename $i)
     done
 
     if ! (("$PROD")) ;then
-        printf " CREATE DEV robots.txt -> %s\n" "$project_dest/robots.txt"
         echo -e "User-Agent: *\nDisallow: /" > "$project_dest/robots.txt"
+        printf " CREATE DEV robots.txt -> %s\n" "$project_dest/robots.txt"
     else
-        printf " CREATE PROD robots.txt -> %s\n" "$project_dest/robots.txt"
         echo -e "User-Agent: *\nDisallow: /drafts/" > "$project_dest/robots.txt"
+        printf " CREATE PROD robots.txt -> %s\n" "$project_dest/robots.txt"
     fi
 }
 
@@ -52,13 +52,13 @@ function create-blogroll {
         echo "$1 must be a folder\n"
         exit 1
     fi
-    rm $1/index.md
+    rm -f $1/index.md
 
     TMPFILE=$(mktemp)
     format-page "title: Blog Posts" > $TMPFILE
     for f in "$1"/*.md;do
         ./scripts/extract_headers.awk "$f"
-    done | gsort -k3nr -k1Mr -k2nr | awk -F ':' \
+    done | gsort -k3nr -k1Mr -k2nr | sed "s@$1/@@g" | awk -F ':' \
     '{ gsub(".md",".html");
     printf "<h4 class=\"blog-roll\"> [%s](./%s) </h4>\n", $2, $4
     printf "<p class=\"post-header\"><small><span><strong>Written by Ethan House</strong></span><time>Posted on %s</time></small></p>\n\n", $1
@@ -67,6 +67,7 @@ function create-blogroll {
     print "---\n"}' >> $TMPFILE
 
     cp $TMPFILE $1/index.md
+    printf " CREATE index.md -> $1/index.md\n"
 }
 
 function create-sitemap {
@@ -75,7 +76,6 @@ function create-sitemap {
         exit 1
     fi
 
-    printf " CREATE sitemap.xml -> $1/sitemap.xml\n"
     find $1 -name "*.html" | sed "s@$1/@https://$2/@g" | awk -F"\n" \
 'BEGIN { print "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
     <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" \
@@ -84,6 +84,7 @@ function create-sitemap {
     http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">" }
 { printf "<url>\n\t<loc>%s</loc>\n\t<changefreq>weekly</changefreq>\n</url>\n", $NF }
 END { print "</urlset>"}' > $1/sitemap.xml
+printf " CREATE sitemap.xml -> $1/sitemap.xml\n"
 }
 
 while [ $# -gt 0 ]; do
