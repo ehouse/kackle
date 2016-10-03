@@ -9,23 +9,25 @@ new-post:
 	@./scripts/write_post.sh
 
 test-build:
-	@./scripts/local.sh
+	@./scripts/prebuild.sh
 	@./scripts/kackle -t build src/personal-site/theme/base.html src/personal-site
 	@./scripts/kackle sitemap out/personal-site $(SITENAME)
+	@./scripts/postbuild.sh
 
 build:
-	@./scripts/local.sh
+	@./scripts/prebuild.sh
 	@./scripts/kackle -t build src/personal-site/theme/base.html src/personal-site
 	@./scripts/kackle sitemap out/personal-site $(SITENAME)
+	@./scripts/postbuild.sh
 
 	find out \( -name "*.html" -or -name "*.css" \) -exec htmlcompressor --compress-js --compress-css {} -o {} \;
 	find out \( -name "*.html" -or -name "*.css" \) -exec gzip {} \;
 
 deploy: clean build
-	rsync -e ssh -P -rvzc --delete out/personal-site/ $(WEBSERVER):$(WEBDIR) --cvs-exclude
+	rsync -e ssh -P -rvzcl --delete out/personal-site/ $(WEBSERVER):$(WEBDIR) --cvs-exclude
 
 test-deploy: clean test-build
-	rsync -e ssh -P -rvzc --delete out/personal-site/ $(WEBSERVER):$(TEST_WEBDIR) --cvs-exclude
+	rsync -e ssh -P -rvzcl --delete out/personal-site/ $(WEBSERVER):$(TEST_WEBDIR) --cvs-exclude
 
 devserver:
 	pushd out/personal-site/; python -m SimpleHTTPServer 8000; popd
