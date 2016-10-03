@@ -58,7 +58,7 @@ function create-blogroll {
     format-page "title: Blog Posts" > $TMPFILE
     for f in "$1"/*.md;do
         ./scripts/extract_headers.awk "$f"
-    done | gsort -k3nr -k1Mr -k2nr | sed "s@$1/@@g" | awk -F ':' \
+    done | gsort -k3nr -k1Mr -k2nr | sed "s@$(dirname $1)/@@g" | awk -F ':' \
     '{ gsub(".md",".html");
     printf "<h4 class=\"blog-roll\"> [%s](./%s) </h4>\n", $2, $4
     printf "<p class=\"post-header\"><small><span><strong>Written by Ethan House</strong></span><time>Posted on %s</time></small></p>\n\n", $1
