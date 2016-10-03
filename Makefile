@@ -16,17 +16,16 @@ test-build:
 
 build:
 	@./scripts/prebuild.sh
-	@./scripts/kackle -t build src/personal-site/theme/base.html src/personal-site
+	@./scripts/kackle build src/personal-site/theme/base.html src/personal-site
 	@./scripts/kackle sitemap out/personal-site $(SITENAME)
 	@./scripts/postbuild.sh
 
-	find out \( -name "*.html" -or -name "*.css" \) -exec htmlcompressor --compress-js --compress-css {} -o {} \;
-	find out \( -name "*.html" -or -name "*.css" \) -exec gzip {} \;
+	find -L out \( -name "*.html" -or -name "*.css" \) -exec htmlcompressor --compress-js --compress-css {} -o {} \;
 
 deploy: clean build
 	rsync -e ssh -P -rvzcl --delete out/personal-site/ $(WEBSERVER):$(WEBDIR) --cvs-exclude
 
-test-deploy: clean test-build
+test-deploy:
 	rsync -e ssh -P -rvzcl --delete out/personal-site/ $(WEBSERVER):$(TEST_WEBDIR) --cvs-exclude
 
 devserver:

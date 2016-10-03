@@ -60,7 +60,7 @@ function create-blogroll {
         ./scripts/extract_headers.awk "$f"
     done | gsort -k3nr -k1Mr -k2nr | sed "s@$(dirname $1)/@@g" | awk -F ':' \
     '{ gsub(".md",".html");
-    printf "<h4 class=\"blog-roll\"> [%s](./%s) </h4>\n", $2, $4
+    printf "<h4 class=\"blog-roll\"> [%s](/%s) </h4>\n", $2, $4
     printf "<p class=\"post-header\"><small><span><strong>Written by Ethan House</strong></span><time>Posted on %s</time></small></p>\n\n", $1
     if ($3)
         printf "%s\n\n", $3
