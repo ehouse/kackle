@@ -108,6 +108,7 @@ a:hover {
 ul {
     list-style: circle inside; }
 ol {
+    margin-left: 1.5rem;
     list-style: decimal inside; }
 ol, ul {
     padding-left: 0;
