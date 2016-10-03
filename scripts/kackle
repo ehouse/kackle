@@ -9,7 +9,7 @@ function compile-folder {
     fi
 
     if [[ -d $2 ]]; then
-        MD_FILES=($(find $2 -name "*.md"))
+        MD_FILES=($(find -L $2 -name "*.md"))
         BLD_FILES=($(sed "s/src/out/g;s/\.md/\.html/g" <<< ${MD_FILES[@]}))
     else
         echo "$2 must be a directory.\n"
