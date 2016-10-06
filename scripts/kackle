@@ -24,10 +24,8 @@ function compile-folder {
 
     project_dest=$(sed "s/src/out/g" <<< $2)
 
-    for i in $2/static/*; do
-        cp -r "$i" "$project_dest/$(basename $i)"
-        printf " COPY %s -> %s\n" $i $project_dest/$(basename $i)
-    done
+    rsync -qrvzcl --delete "$2/static/"* "$project_dest"
+    printf " COPY %s -> %s\n" "$2/static/" "$project_dest"
 
     if ! (("$PROD")) ;then
         echo -e "User-Agent: *\nDisallow: /" > "$project_dest/robots.txt"
@@ -64,7 +62,7 @@ function create-blogroll {
     printf "<p class=\"post-header\"><small><span><strong>Written by Ethan House</strong></span><time>Posted on %s</time></small></p>\n\n", $1
     if ($3)
         printf "%s\n\n", $3
-    print "---\n"}' >> $TMPFILE
+    print "---\n"}' | ghead -n -2 >> $TMPFILE
 
     cp $TMPFILE $1/index.md
     printf " CREATE index.md -> $1/index.md\n"
