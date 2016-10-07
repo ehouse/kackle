@@ -1,31 +1,51 @@
-#!/bin/bash -eu
+#!/bin/bash -euo pipefail
 
 PROD=1
 
-function compile-folder {
-    if ! [[ ${1: -5} == ".html" ]]; then
-        echo "$1 must be an html file.\n"
-        exit 1
-    fi
+usage(){
+    echo "USAGE: [-vhdt] [-b TARGET |-r TARGET |-s TARGET] [-o output]"
+    echo "Page Generation"
+    echo " -b  : Build target folder assumes"
+    echo " -r  : Build blogroll of target folder"
+    echo " -s  : Generate sitemap of TARGET"
+    echo " -o  : Set output folder (Default: out/)"
+    echo " -t  : Build project with test settings"
+    echo "Optional"
+    echo " -h  : Show help menu"
+    echo " -v  : Set Verbose"
+    echo " -d  : Set Bash debug mode"
+}
 
-    if [[ -d $2 ]]; then
-        MD_FILES=($(find -L $2 -name "*.md"))
+### compile-folder
+# $1        :: folder to build
+# [$2]      :: option output folder. Assumed to be ./out/
+###
+function compile-folder {
+    SRC=$1
+    if [[ -d $SRC ]]; then
+        MD_FILES=($(find -L $SRC -name "*.md"))
         BLD_FILES=($(sed "s/src/out/g;s/\.md/\.html/g" <<< ${MD_FILES[@]}))
     else
-        echo "$2 must be a directory.\n"
+        echo "$SRC must be a directory"
         exit 1;
+    fi
+
+    theme="$SRC/theme/base.html"
+    if ! [[ -f $theme ]]; then
+        echo "Missing $theme file"
+        exit 1
     fi
 
     for ((i=0; i<${#BLD_FILES[@]};++i)); do
         mkdir -p $(dirname "${BLD_FILES[i]}")
-        pandoc --template $1 "${MD_FILES[i]}" -o "${BLD_FILES[i]}"
+        pandoc --template $theme "${MD_FILES[i]}" -o "${BLD_FILES[i]}"
         printf " BUILD %s -> %s\n" "${MD_FILES[i]}" "${BLD_FILES[i]}"
     done
 
-    project_dest=$(sed "s/src/out/g" <<< $2)
+    project_dest=$(sed "s/src/out/g" <<< $SRC)
 
-    rsync -qrvzcl --delete "$2/static/"* "$project_dest"
-    printf " COPY %s -> %s\n" "$2/static/" "$project_dest"
+    rsync -qrvzcl --delete "$SRC/static/"* "$project_dest"
+    printf " COPY %s -> %s\n" "$SRC/static/" "$project_dest"
 
     if ! (("$PROD")) ;then
         echo -e "User-Agent: *\nDisallow: /" > "$project_dest/robots.txt"
@@ -69,55 +89,91 @@ function create-blogroll {
 }
 
 function create-sitemap {
+AWK_SCIPT='BEGIN { print "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
+<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" \
+xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \
+xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 \
+http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">" }
+{ printf "<url>\n\t<loc>%s</loc>\n\t<changefreq>weekly</changefreq>\n</url>\n", $NF }
+END { print "</urlset>"}'
+
     if ! [[ -d $1 ]];then
         echo "$1 must be a folder\n"
         exit 1
     fi
 
     find $1 -name "*.html" | sed "s@$1/@https://$2/@g" | awk -F"\n" \
-'BEGIN { print "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
-    <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" \
-    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \
-    xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 \
-    http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">" }
-{ printf "<url>\n\t<loc>%s</loc>\n\t<changefreq>weekly</changefreq>\n</url>\n", $NF }
-END { print "</urlset>"}' > $1/sitemap.xml
+        $AWK_SCRIPT > $1/sitemap.xml
+
 printf " CREATE sitemap.xml -> $1/sitemap.xml\n"
 }
 
-while [ $# -gt 0 ]; do
-    case $1 in
-        -d|--debug)
-            set -x
-            shift
-            ;;
-        -h|--help)
-            echo "$0 build TEMPLATE FOLDER"
-            exit
-            ;;
-        -t)
-            PROD=0
-            shift
-            ;;
-        -v|--verbose)
-            set -v
-            shift
-            ;;
-        blogroll)
-            create-blogroll $2
-            exit
-            ;;
-        build)
-            compile-folder $2 $3
-            exit
-            ;;
-        sitemap)
-            create-sitemap $2 $3
-            exit
-            ;;
-        *)
-            echo "usage: kackle [-vd] [-h] command args..."
-            exit
-            ;;
-    esac
-done
+main() {
+    while getopts ":hvdto:b:r:s:" opt; do
+        case $opt in
+            h)
+                usage
+                exit 0
+                ;;
+            v)
+                set -v
+                ;;
+            d)
+                set -x
+                ;;
+            t)
+                PROD=0
+                ;;
+            o)
+                OUTPUT="$OPTARG"
+                : "${OUTPUT:=output/}"
+                readonly $OUTPUT
+                ;;
+            b)
+                # Build Folder
+                : ${TASK:="b"}
+                : ${TARGET:="$OPTARG"}
+                ;;
+            r)
+                # Create Blogroll
+                : "${TASK:=r}"
+                : "${TARGET:=$OPTARG}"
+                readonly $TASK
+                readonly $TARGET
+                ;;
+            s)
+                # Create Sitemap
+                : "${TASK:=s}"
+                : "${TARGET:=$OPTARG}"
+                readonly $TASK
+                readonly $TARGET
+                ;;
+            \?)
+                echo "Invalid option: -$OPTARG" >&2
+                usage
+                exit 1
+                ;;
+        esac
+    done
+    if [[ -z ${TASK:-} ]]; then
+        usage
+        exit
+    fi
+
+    if ! [[ -d $TARGET ]]; then
+        echo "$TARGET must be a folder"
+        exit 1
+    fi
+
+    if [[ ${TASK:-} == "b" ]]; then
+        compile-folder $TARGET $OUTPUT
+
+    elif [[ ${TASK:-} == 'r' ]]; then
+        create-blogroll $TARGET $OUTPUT
+
+    elif [[ ${TASK:-} == 's' ]]; then
+        create-sitemap $TARGET $OUTPUT
+    fi
+}
+
+main "$@"

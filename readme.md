@@ -32,8 +32,6 @@ A very simple build of the sample website would look like...
  CREATE sitemap.xml -> out/sample/sitemap.xml
 ```
 
-To serve the files locally run `make devserver`. 
-
 ### Design
 
 Kackle fits two use cases that few other static site generators aim to hit. It's
@@ -55,4 +53,4 @@ Within the `scripts/` folder lives two files called `prebuild.sh` and
 respectively when built through the makefile.
 
 ### Releases
-v0.1-prerelease :: Decoupled persona site from Kackle. Ready for common use.
+[v0.1-prerelease](https://github.com/ehouse/kackle/releases/tag/v0.1-prerelease) :: Decoupled persona site from Kackle. Ready for common use.

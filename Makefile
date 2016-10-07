@@ -2,11 +2,16 @@ WEBDIR = /home/ehouse/public_html/
 TEST_WEBDIR = /home/ehouse/public_html/webtest/
 WEBSERVER = bawls.ehouse.io
 SITENAME = ehouse.io
+PROJECTS := $(patsubst src/%, %, $(wildcard src/*))
 
-all: test-build
+all: $(PROJECTS)
 
 new-post:
 	@./scripts/write_post.sh
+
+$(PROJECTS):
+	@./scripts/kackle -t build src/$@/theme/base.html src/$@
+	@./scripts/kackle sitemap out/$@ $(SITENAME)
 
 test-build:
 	@./scripts/prebuild.sh
@@ -28,10 +33,7 @@ deploy: clean build
 test-deploy:
 	rsync -e ssh -P -rvzcl --delete out/personal-site/ $(WEBSERVER):$(TEST_WEBDIR) --cvs-exclude
 
-devserver:
-	pushd out/personal-site/; python -m SimpleHTTPServer 8000; popd
-
 clean:
 	rm -rf $(wildcard out/*)
 
-.PHONY: all new-post standalone test-build build deploy test-deploy devserver clean
+.PHONY: all new-post $(PROJECTS) test-build build deploy test-deploy clean
