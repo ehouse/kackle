@@ -1,58 +1,59 @@
 #!/bin/bash -euo pipefail
 
-PROD=1
+### GLOBAL VALUES
+PROD=0
 
 usage(){
-    echo "USAGE: [-vhdt] [-b TARGET |-r TARGET |-s TARGET] [-o output]"
+    echo "USAGE: [-vhdp] [-t THEME/FILE.html] [-b TARGET |-r TARGET |-s TARGET -b SITENAME] [-o output]"
     echo "Page Generation"
     echo " -b  : Build target folder assumes"
     echo " -r  : Build blogroll of target folder"
     echo " -s  : Generate sitemap of TARGET"
-    echo " -o  : Set output folder (Default: out/)"
-    echo " -t  : Build project with test settings"
     echo "Optional"
+    echo " -o  : Set output folder (Default: out/)"
+    echo " -t  : Set theme file (Default: theme/base.html)"
+    echo " -p  : Build project with prod settings"
+    echo " -n  : Sitename for sitemap generator"
     echo " -h  : Show help menu"
     echo " -v  : Set Verbose"
     echo " -d  : Set Bash debug mode"
 }
 
-### compile-folder
-# $1        :: folder to build
-# [$2]      :: option output folder. Assumed to be ./out/
-###
-function compile-folder {
-    SRC=$1
-    if [[ -d $SRC ]]; then
-        MD_FILES=($(find -L $SRC -name "*.md"))
-        BLD_FILES=($(sed "s/src/out/g;s/\.md/\.html/g" <<< ${MD_FILES[@]}))
-    else
-        echo "$SRC must be a directory"
-        exit 1;
-    fi
+##########
+# Compiles folder and sends to output location
+# Arguments:
+#   Source folder to be built
+#   Output folder
+##########
+compile-folder() {
+    local SRC=$1
+    local OUT=$2
 
-    theme="$SRC/theme/base.html"
-    if ! [[ -f $theme ]]; then
-        echo "Missing $theme file"
+    local MD_FILES=($(find -L $SRC -name "*.md"))
+    local BLD_FILES=($(sed "s@src@"${OUT}"@g;s@\.md@\.html@g" <<< ${MD_FILES[@]}))
+
+    if ! [[ -f $THEME ]]; then
+        echo "Missing $THEME file"
         exit 1
     fi
 
     for ((i=0; i<${#BLD_FILES[@]};++i)); do
         mkdir -p $(dirname "${BLD_FILES[i]}")
-        pandoc --template $theme "${MD_FILES[i]}" -o "${BLD_FILES[i]}"
-        printf " BUILD %s -> %s\n" "${MD_FILES[i]}" "${BLD_FILES[i]}"
+        pandoc --template $THEME "${MD_FILES[i]}" -o "$(greadlink -f ${BLD_FILES[i]})"
+        printf " BUILD %s -> %s\n" "${MD_FILES[i]}" "$(greadlink -f ${BLD_FILES[i]})"
     done
 
     project_dest=$(sed "s/src/out/g" <<< $SRC)
 
     rsync -qrvzcl --delete "$SRC/static/"* "$project_dest"
-    printf " COPY %s -> %s\n" "$SRC/static/" "$project_dest"
+    printf " COPY %s -> %s\n" "$SRC/static/" "$(greadlink -f $project_dest)"
 
-    if ! (("$PROD")) ;then
-        echo -e "User-Agent: *\nDisallow: /" > "$project_dest/robots.txt"
-        printf " CREATE DEV robots.txt -> %s\n" "$project_dest/robots.txt"
-    else
+    if (("$PROD")) ;then
         echo -e "User-Agent: *\nDisallow: /drafts/" > "$project_dest/robots.txt"
-        printf " CREATE PROD robots.txt -> %s\n" "$project_dest/robots.txt"
+        printf " CREATE PROD robots.txt -> %s\n" "$(greadlink -f $project_dest/robots.txt)"
+    else
+        echo -e "User-Agent: *\nDisallow: /" > "$project_dest/robots.txt"
+        printf " CREATE DEV robots.txt -> %s\n" "$(greadlink -f $project_dest/robots.txt)"
     fi
 }
 
@@ -62,91 +63,117 @@ function format-page {
         echo -e "$i"
     done
     echo -e "---\n"
-
 }
 
-function create-blogroll {
-    if ! [[ -d $1 ]];then
-        echo "$1 must be a folder\n"
-        exit 1
-    fi
-    rm -f $1/index.md
+##########
+# Create blogroll index of a folder.
+#   Requires properly formatted YAML headers
+# Arguments:
+#   Source folder to build
+##########
+create-blogroll() {
+    local SRC=$1
+
+    rm -f $SRC/index.md
 
     TMPFILE=$(mktemp)
     format-page "title: Blog Posts" > $TMPFILE
-    for f in "$1"/*.md;do
+    for f in "$SRC"/*.md;do
         ./scripts/extract_headers.awk "$f"
-    done | gsort -k3nr -k1Mr -k2nr | sed "s@$(dirname $1)/@@g" | awk -F ':' \
+    done | gsort -k3nr -k1Mr -k2nr | sed "s@$(dirname $SRC)/@@g" | awk -F ':' \
     '{ gsub(".md",".html");
-    printf "<h4 class=\"blog-roll\"> [%s](/%s) </h4>\n", $2, $4
-    printf "<p class=\"post-header\"><small><span><strong>Written by Ethan House</strong></span><time>Posted on %s</time></small></p>\n\n", $1
+    printf "<h4 class=\"blog-roll\"> [%s](/%s) </h4>\n", $2, $5
+    printf "<ul><li style=\"display:inline-block;margin-right:1em;\">_Written by %s_</li><li style=\"display:inline-block;margin-right:1em;\"><time>Posted on %s</time></li></ul>\n\n", $3, $1
     if ($3)
-        printf "%s\n\n", $3
+        printf "%s\n\n", $4
     print "---\n"}' | ghead -n -2 >> $TMPFILE
 
-    cp $TMPFILE $1/index.md
-    printf " CREATE index.md -> $1/index.md\n"
+    cp $TMPFILE $SRC/index.md
+    printf " CREATE index.md -> %s\n" "$(greadlink -f $SRC/index.md)"
 }
 
-function create-sitemap {
-AWK_SCIPT='BEGIN { print "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
-<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" \
-xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \
-xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 \
-http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">" }
-{ printf "<url>\n\t<loc>%s</loc>\n\t<changefreq>weekly</changefreq>\n</url>\n", $NF }
+##########
+# Creates a sitemap of every HTML file within the directory. Places within src folder.
+# Arguments:
+#   Name of Generated Site
+#   Source folder to build from
+##########
+create-sitemap() {
+    local sitename=$1
+    local src=$2
+
+    local AWK_SCRIPT=\
+'BEGIN { print "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
+        <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" \
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \
+        xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 \
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">" }
+    { printf "<url>\n\t<loc>%s</loc>\n\t<changefreq>weekly</changefreq>\n</url>\n", $NF }
 END { print "</urlset>"}'
 
-    if ! [[ -d $1 ]];then
-        echo "$1 must be a folder\n"
-        exit 1
-    fi
+    find $src -name "*.html" | sed "s@$src/@https://$sitename/@g" | awk -F"\n" \
+        "$AWK_SCRIPT" > $src/sitemap.xml
 
-    find $1 -name "*.html" | sed "s@$1/@https://$2/@g" | awk -F"\n" \
-        $AWK_SCRIPT > $1/sitemap.xml
-
-printf " CREATE sitemap.xml -> $1/sitemap.xml\n"
+    printf " CREATE sitemap.xml -> %s\n" "$(greadlink -f $src/sitemap.xml)"
 }
 
 main() {
-    while getopts ":hvdto:b:r:s:" opt; do
+    while getopts ":hvdpo:b:r:s:t:n:x:" opt; do
         case $opt in
             h)
+                # Print Usage
                 usage
                 exit 0
                 ;;
             v)
+                # Verbose Mode
                 set -v
                 ;;
             d)
+                # Debug Mode
                 set -x
                 ;;
-            t)
-                PROD=0
+            p)
+                # Set prod state
+                PROD=1
                 ;;
             o)
+                # Set output folder
                 OUTPUT="$OPTARG"
-                : "${OUTPUT:=output/}"
-                readonly $OUTPUT
+                readonly OUTPUT
+                ;;
+            t)
+                # Set Theme
+                THEME="$OPTARG"
                 ;;
             b)
                 # Build Folder
                 : ${TASK:="b"}
                 : ${TARGET:="$OPTARG"}
+                readonly TASK
+                readonly TARGET
                 ;;
             r)
                 # Create Blogroll
                 : "${TASK:=r}"
                 : "${TARGET:=$OPTARG}"
-                readonly $TASK
-                readonly $TARGET
+                readonly TASK
+                readonly TARGET
                 ;;
             s)
                 # Create Sitemap
                 : "${TASK:=s}"
                 : "${TARGET:=$OPTARG}"
-                readonly $TASK
-                readonly $TARGET
+                readonly TASK
+                readonly TARGET
+                ;;
+            n)
+                # Set sitename for Sitemap Generator
+                readonly SITENAME="$OPTARG"
+                ;;
+            x)
+                # Exclude folder from build process
+                EXCLUDE+=( $OPTARG )
                 ;;
             \?)
                 echo "Invalid option: -$OPTARG" >&2
@@ -155,16 +182,26 @@ main() {
                 ;;
         esac
     done
+
+    # Print Usage if no build command provided
     if [[ -z ${TASK:-} ]]; then
         usage
         exit
     fi
 
+    ### SET DEFAULTS AND READONLY STATUS
+    : "${OUTPUT:=out/}"
+    : "${THEME:=$TARGET/theme/base.html}"
+    readonly OUTPUT
+    readonly THEME
+
+    # Test if target is a folder
     if ! [[ -d $TARGET ]]; then
         echo "$TARGET must be a folder"
         exit 1
     fi
 
+    # Run Build Commands
     if [[ ${TASK:-} == "b" ]]; then
         compile-folder $TARGET $OUTPUT
 
@@ -172,7 +209,11 @@ main() {
         create-blogroll $TARGET $OUTPUT
 
     elif [[ ${TASK:-} == 's' ]]; then
-        create-sitemap $TARGET $OUTPUT
+        if [[ -z ${SITENAME:-} ]];then
+            echo "Sitename required for sitemap generator"
+            exit 1
+        fi
+        create-sitemap $SITENAME $TARGET
     fi
 }
 
