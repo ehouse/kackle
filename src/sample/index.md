@@ -1,20 +1,25 @@
 ---
-title: Example Website
+title: Sample Website
 ---
 
-## Sample Heading 1
+## About Me
 
-Et magnis dis parturient montes, nascetur ridiculus mus. Praesent semper magna.
-In eu justo. Nunc vitae risus nec sem scelerisque consequat. In hac habitasse
-platea dictumst. Nam posuere ultricies turpis. Pellentesque a pede. Duis sed
-tortor. Phasellus egestas porta lectus. Aliquam dignissim consequat diam.
-Pellentesque pede.
+Eu neque. Fusce est eros, sagittis eget, interdum a, ornare suscipit, massa. Sed
+vehicula elementum ligula. Aliquam erat volutpat. Donec odio. Quisque nunc.
+Integer cursus feugiat magna. Fusce ac elit ut elit aliquam suscipit. Duis leo
+est, interdum nec, varius in, facilisis vitae, odio. Phasellus eget leo at urna
+adipiscing vulputate. Nam eu erat vel arcu tristique mattis. Nullam placerat
+lorem non augue. Cras et velit. Morbi sapien nulla, volutpat a, tristique eu,
+molestie ac, felis.
 
-#### [Sample Post](/posts/index.html)
+Suspendisse sit amet tellus non odio porta pellentesque. Nulla facilisi. Integer
+iaculis condimentum augue. Nullam urna nulla, vestibulum quis, lacinia eget,
+ullamcorper eu, dui. Quisque dignissim.
 
-Ut varius tincidunt tellus. Curabitur ornare ipsum. Aenean laoreet posuere orci.
-Etiam id nisl. Suspendisse volutpat elit molestie orci. Suspendisse vel augue at
-felis tincidunt sollicitudin. Fusce arcu. Duis a tortor. Duis et odio et leo
-sollicitudin consequat. Aliquam lobortis. Phasellus condimentum. Ut porttitor
-bibendum libero. Integer euismod lacinia velit. Donec velit justo, sodales
-varius, cursus.
+## My Other Works
+
+Sagittis semper. Donec quis mi. Duis eget pede. Phasellus arcu tellus, ultricies
+id, consequat id, lobortis nec, diam. Suspendisse sed nunc. Pellentesque id
+magna. Morbi interdum quam at est. Maecenas eleifend mi in urna. Praesent et
+lectus ac nibh luctus viverra. In vel dolor sed nibh sollicitudin tincidunt. Ut
+consequat nisi.

@@ -1,0 +1,22 @@
+nav {
+    text-align:right;
+    margin-top:5%;
+}
+
+nav ul li {
+    display:inline-block;
+}
+
+nav ul li a {
+    font-size: 1.7em;
+    padding: .75em 1em;
+}
+
+article {
+    margin-top:5%;
+}
+
+.header ul li {
+    display:inline-block;
+    margin-right: 1em;
+}
