@@ -1,7 +1,7 @@
-PROJECT=sample
-DEPLOY_DIR=/PATH/TO/SOME/FOLDER
-WEBSERVER=www.sample.io
-SITENAME=sample.io
+PROJECT=blog
+DEPLOY_DIR=/home/ehouse/public_html/webtest
+WEBSERVER=bawls.ehouse.io
+SITENAME=ehouse.io
 
 all: $(PROJECT)
 
@@ -15,13 +15,13 @@ $(PROJECT):
 	@./scripts/kackle -b src/$(PROJECT)
 	# Create sitemap
 	@./scripts/kackle -s out/$(PROJECT) -n "$(SITENAME)"
-	# Compress CSS, HTML and JS of out/personal-site
-	find -L out/personal-site \( -name "*.html" -or -name "*.css" \) -exec htmlcompressor --compress-js --compress-css {} -o {} \;
+	# Compress the CSS, HTML and JS
+	find -L out/$(PROJECT) \( -name "*.html" -or -name "*.css" \) -exec htmlcompressor --compress-js --compress-css {} -o {} \;
 
-$(PROJECT)-deploy: $(PROJECT)
+deploy: $(PROJECT)
 	rsync -e ssh -P -rvzcl --delete out/$(PROJECT)/ $(WEBSERVER):$(DEPLOY_DIR) --cvs-exclude
 
 clean:
 	rm -rf $(wildcard out/*)
 
-.PHONY: all new-post $(PROJECT) $(PROJECT)-deploy personal-site personal-site-prod personal-site-deploy clean
+.PHONY: all new-post $(PROJECT) deploy clean
