@@ -1,22 +1,25 @@
-#!/bin/bash -euo pipefail
+#!/bin/bash
+set -euo pipefail
 
 if [[ $(uname) == "Darwin" ]];then
     PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 fi
 
+command -v pandoc >/dev/null 2>&1 || { echo >&2 "I require Pandoc but it's not installed.  Aborting."; exit 1; }
+
 ### GLOBAL VALUES
-PROD=0
+PROD=1
 
 usage(){
-    echo "USAGE: [-vhdp] [-t THEME/FILE.html] [-b TARGET |-r TARGET |-s TARGET -b SITENAME] [-o output]"
+    echo "USAGE: [-vhdp] (-b TARGET [-e THEME.html] |-r TARGET |-f SRC [-t] -n SITENAME) [-o OUTPUT]"
     echo "Page Generation"
     echo " -b  : Build target folder assumes"
     echo " -r  : Build blogroll of target folder"
-    echo " -s  : Generate sitemap of TARGET"
+    echo " -f  : Finalize folder for deployment by writing out robots.txt, sitemap.xml, and compresses folder"
     echo "Optional"
     echo " -o  : Set output folder (Default: out/)"
-    echo " -t  : Set theme file (Default: theme/base.html)"
-    echo " -p  : Build project with prod settings"
+    echo " -e  : Set theme file (Default: theme/base.html)"
+    echo " -t  : Test settings for -f flag. Disables compression and restrictive robots.txt"
     echo " -n  : Sitename for sitemap generator"
     echo " -h  : Show help menu"
     echo " -v  : Set Verbose"
@@ -51,14 +54,6 @@ compile-folder() {
 
     rsync -qrvzcl --delete "$SRC/static/"* "$project_dest"
     printf " COPY %s -> %s\n" "$SRC/static/" "$(readlink -f $project_dest)"
-
-    if (("$PROD")) ;then
-        echo -e "User-Agent: *\nDisallow: /drafts/" > "$project_dest/robots.txt"
-        printf " CREATE PROD robots.txt -> %s\n" "$(readlink -f $project_dest/robots.txt)"
-    else
-        echo -e "User-Agent: *\nDisallow: /" > "$project_dest/robots.txt"
-        printf " CREATE DEV robots.txt -> %s\n" "$(readlink -f $project_dest/robots.txt)"
-    fi
 }
 
 function format-page {
@@ -97,15 +92,16 @@ create-blogroll() {
 }
 
 ##########
-# Creates a sitemap of every HTML file within the directory. Places within src folder.
+# Finalize webdir for deployment
+# If -t is set then robots.txt blocks entire site and nothing is compressed.
+# else robots.txt blocks /drafts and everything is compressed using htmlcompressor.
 # Arguments:
-#   Name of Generated Site
-#   Source folder to build from
+#   Source folder to compress
+#   Sitename for sitemap.xml
 ##########
-create-sitemap() {
-    local sitename=$1
-    local src=$2
-
+finalize-webdir() {
+    local target=$1
+    local sitename=$2
     local AWK_SCRIPT=\
 'BEGIN { print "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
         <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" \
@@ -115,14 +111,26 @@ create-sitemap() {
     { printf "<url>\n\t<loc>%s</loc>\n\t<changefreq>weekly</changefreq>\n</url>\n", $NF }
 END { print "</urlset>"}'
 
-    find $src -name "*.html" | sed "s@$src/@https://$sitename/@g" | awk -F"\n" \
-        "$AWK_SCRIPT" > $src/sitemap.xml
+    find $target -name "*.html" | sed "s@$target/@https://$sitename/@g" | awk -F"\n" \
+        "$AWK_SCRIPT" > $target/sitemap.xml
 
-    printf " CREATE sitemap.xml -> %s\n" "$(readlink -f $src/sitemap.xml)"
+    printf " CREATE sitemap.xml -> %s\n" "$(readlink -f $target/sitemap.xml)"
+
+    if (("$PROD")) ;then
+        echo -e "User-Agent: *\nDisallow: /drafts/" > "$target/robots.txt"
+        printf " CREATE PROD robots.txt -> %s\n" "$(readlink -f $target/robots.txt)"
+    else
+        echo -e "User-Agent: *\nDisallow: /" > "$target/robots.txt"
+        printf " CREATE DEV robots.txt -> %s\n" "$(readlink -f $target/robots.txt)"
+    fi
+
+    printf " COMPRESSING %s\n" "$(readlink -f $target)"
+    command -v htmlcompressor >/dev/null 2>&1 || { echo >&2 "htmlcompressor required to compress $target folder!"; exit 1; }
+    find -L "$target" \( -name "*.html" -or -name "*.css" \) -exec htmlcompressor --compress-js --compress-css {} -o {} \;
 }
 
 main() {
-    while getopts ":hvdpo:b:r:s:t:n:x:" opt; do
+    while getopts ":hvdpo:b:r:s:t:n:x:f:" opt; do
         case $opt in
             h)
                 # Print Usage
@@ -137,18 +145,25 @@ main() {
                 # Debug Mode
                 set -x
                 ;;
-            p)
+            t)
                 # Set prod state
-                PROD=1
+                PROD=0
                 ;;
             o)
                 # Set output folder
                 OUTPUT="$OPTARG"
                 readonly OUTPUT
                 ;;
-            t)
+            e)
                 # Set Theme
                 THEME="$OPTARG"
+                ;;
+            f)
+                # Finialize folder for deployment
+                : ${TASK:="f"}
+                : ${TARGET:="$OPTARG"}
+                readonly TASK
+                readonly TARGET
                 ;;
             b)
                 # Build Folder
@@ -160,13 +175,6 @@ main() {
             r)
                 # Create Blogroll
                 : "${TASK:=r}"
-                : "${TARGET:=$OPTARG}"
-                readonly TASK
-                readonly TARGET
-                ;;
-            s)
-                # Create Sitemap
-                : "${TASK:=s}"
                 : "${TARGET:=$OPTARG}"
                 readonly TASK
                 readonly TARGET
@@ -212,12 +220,12 @@ main() {
     elif [[ ${TASK:-} == 'r' ]]; then
         create-blogroll $TARGET $OUTPUT
 
-    elif [[ ${TASK:-} == 's' ]]; then
+    elif [[ ${TASK:-} == 'f' ]]; then
         if [[ -z ${SITENAME:-} ]];then
-            echo "Sitename required for sitemap generator"
+            echo "Sitename required for finalization"
             exit 1
         fi
-        create-sitemap $SITENAME $TARGET
+        finalize-webdir $TARGET $SITENAME
     fi
 }
 

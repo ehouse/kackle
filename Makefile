@@ -11,15 +11,14 @@ new-post:
 
 $(OUT): $(SRC)
 	# Build Blogroll index
-	@./scripts/kackle -r $(SRC)/blog
+	@./scripts/kackle -r "$(SRC)/blog"
 	# Build Blog
-	@./scripts/kackle -b $(SRC)
-	# Create sitemap
-	@./scripts/kackle -s $(OUT) -n "$(SITENAME)"
-	# Compress the CSS, HTML and JS
-	find -L $(OUT) \( -name "*.html" -or -name "*.css" \) -exec htmlcompressor --compress-js --compress-css {} -o {} \;
+	@./scripts/kackle -b "$(SRC)"
 
 deploy: $(OUT)
+	# Finalize Webdir for Deployment
+	@./scripts/kackle -f "$(OUT)" -n "$(SITENAME)"
+
 	rsync -e ssh -P -rvzcl --delete $(OUT)/ $(WEBSERVER):$(DEPLOY_DIR) --cvs-exclude
 
 clean:
