@@ -14,7 +14,7 @@ release. Checkout the master branch if you're brave ok with things breaking.
 
 ### Dependencies
 - `gnu-coreutils`: Required for building.
-- `pandoc`: Compilg markdown to html.
+- `pandoc`: Compile markdown to html.
 - `gnu-make`: Required for running Makefile.
 - `rsync`: Used for deploying but could be replaced with anything.
 - `htmlcompressor`: Very optional, easily disabled in Makefile. Used for minifying html and css.

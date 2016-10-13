@@ -46,8 +46,10 @@ compile-folder() {
 
     for ((i=0; i<${#BLD_FILES[@]};++i)); do
         mkdir -p $(dirname "${BLD_FILES[i]}")
-        pandoc --template $THEME "${MD_FILES[i]}" -o "$(readlink -f ${BLD_FILES[i]})"
-        printf " BUILD %s -> %s\n" "${MD_FILES[i]}" "$(readlink -f ${BLD_FILES[i]})"
+        if [[ "${MD_FILES[i]}" -nt "${BLD_FILES[i]}" ]];then
+            pandoc --template $THEME "${MD_FILES[i]}" -o "${BLD_FILES[i]}"
+            printf " BUILD %s -> %s\n" "${MD_FILES[i]}" "$(readlink -f ${BLD_FILES[i]})"
+        fi
     done
 
     project_dest=$(sed "s/src/out/g" <<< $SRC)

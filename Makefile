@@ -1,25 +1,24 @@
-SRC=src/sample
-OUT=out/sample
-DEPLOY_DIR=/home/<user-name>/public_html/
-WEBSERVER=<web-server>
-SITENAME=<site-name>
+DEPLOY_DIR=/home/<user-name>/public_html
+WEBSERVER=<web.server.com>
+SITENAME=<sitename.com>
+
 
 all: $(OUT)
 
 new-post:
 	@./scripts/write_post.sh
 
-$(OUT): $(SRC)
+%:
 	# Build Blogroll index
-	@./scripts/kackle -r "$(SRC)/blog"
+	@./scripts/kackle -r "src/$@/blog"
 	# Build Blog
-	@./scripts/kackle -b "$(SRC)"
+	@./scripts/kackle -b "src/$@"
 
-deploy: $(OUT)
+deploy-%:
 	# Finalize Webdir for Deployment
-	@./scripts/kackle -f "$(OUT)" -n "$(SITENAME)"
+	@./scripts/kackle -f "out/$(subst deploy-,,$@)" -n "$(SITENAME)"
 
-	rsync -e ssh -P -rvzcl --delete $(OUT)/ $(WEBSERVER):$(DEPLOY_DIR) --cvs-exclude
+	rsync -e ssh -P -rvzcl "out/$(subst deploy-,,$@)/" $(WEBSERVER):$(DEPLOY_DIR)/$(subst deploy-,,$@) --cvs-exclude
 
 clean:
 	rm -rf $(wildcard out/*)
