@@ -2,9 +2,9 @@
 
 ### Creates new post asking questions as it runs
 
-default_project="personal-site"
+default_project="sample"
 default_location="drafts"
-default_author="Ethan House"
+default_author="Joe Dirt"
 
 read -p "Name of page: " p_title
 read -p "Location of page [$default_location]: " p_location
