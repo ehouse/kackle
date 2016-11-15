@@ -13,7 +13,7 @@ PROD=1
 usage(){
     echo "USAGE: [-vhdp] (-b TARGET [-e THEME.html] |-r TARGET |-f SRC [-t] -n SITENAME) [-o OUTPUT]"
     echo "Page Generation"
-    echo " -b  : Build target folder assumes"
+    echo " -b  : Build target folder"
     echo " -r  : Build blogroll of target folder"
     echo " -f  : Finalize folder for deployment by writing out robots.txt, sitemap.xml, and compresses folder"
     echo "Optional"
@@ -46,7 +46,7 @@ compile-folder() {
 
     for ((i=0; i<${#BLD_FILES[@]};++i)); do
         mkdir -p $(dirname "${BLD_FILES[i]}")
-        if [[ "${MD_FILES[i]}" -nt "${BLD_FILES[i]}" ]];then
+        if [[ "${MD_FILES[i]}" -nt "${BLD_FILES[i]}" ]] || [[ "$THEME" -nt "${BLD_FILES[i]}" ]];then
             pandoc --template $THEME "${MD_FILES[i]}" -o "${BLD_FILES[i]}"
             printf " BUILD %s -> %s\n" "${MD_FILES[i]}" "$(readlink -f ${BLD_FILES[i]})"
         fi
