@@ -2,9 +2,9 @@
 
 ### Creates new post asking questions as it runs
 
-default_project="sample"
+default_project="blog"
 default_location="drafts"
-default_author="Joe Dirt"
+default_author="Ethan House"
 
 read -p "Name of page: " p_title
 read -p "Location of page [$default_location]: " p_location
@@ -15,7 +15,7 @@ read -p "Author [$default_author]: " p_author
 p_location=${p_location:-$default_location}
 p_author=${p_author:-$default_author}
 p_project=${p_project:-$default_project}
-p_date=$(gdate +"%d %B, %Y")
+p_date=$(gdate +"%B %d, %Y")
 
 # Ensures no illegal/bad characters are written to disk
 p_ondisk=$(echo $p_title | tr " " - | tr '[:upper:]' '[:lower:]' | perl -p -e  's/[^A-Za-z0-9\-\.]//g;')
