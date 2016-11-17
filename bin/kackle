@@ -16,6 +16,7 @@ usage(){
     echo " -b  : Build target folder"
     echo " -r  : Build blogroll of target folder"
     echo " -f  : Finalize folder for deployment by writing out robots.txt, sitemap.xml, and compresses folder"
+    echo " -p  : Creates new post based on defaults and user answers"
     echo "Optional"
     echo " -o  : Set output folder (Default: out/)"
     echo " -e  : Set theme file (Default: theme/base.html)"
@@ -25,6 +26,41 @@ usage(){
     echo " -h  : Show help menu"
     echo " -v  : Set Verbose"
     echo " -d  : Set Bash debug mode"
+}
+
+new-post(){
+    default_location="drafts"
+    default_author="Ethan House"
+
+    read -p "Name of page: " p_title
+    read -p "Location of page [$default_location]: " p_location
+    read -p "Author [$default_author]: " p_author
+
+    # Sets defaults if given value is NULL
+    p_location=${p_location:-$default_location}
+    p_author=${p_author:-$default_author}
+    p_date=$(gdate +"%B %d, %Y")
+
+    # Ensures no illegal/bad characters are written to disk
+    p_ondisk=$(echo $p_title | tr " " - | tr '[:upper:]' '[:lower:]' | perl -p -e  's/[^A-Za-z0-9\-\.]//g;')
+
+    # Ensures html safe encodings are used
+    p_title=$(echo $p_title | perl -n -mHTML::Entities -e ' ; print HTML::Entities::encode_entities($_) ;')
+
+    p_file="src/$p_location/$p_ondisk.md"
+
+    if [[ ! -d $(dirname $p_file) ]];then
+        echo "Folder $(pwd)/$(dirname $p_file) doesn't exist. Can't Create $p_file"
+        exit 1
+    fi
+
+    # Writes out template for new blog post
+    echo "$p_title:$p_date:$p_author" | awk \
+        'BEGIN  {FS=":"; OFS="\n"}
+                { printf "---\ntitle: %s\ndate: %s\nauthor: %s\nsummary: %s\n---", $1, $2, $3, "Example Blog Post" }
+        END     { print "\nContent of my super awesome blog post!" }' >> $p_file
+
+    echo "File $(pwd)/$p_file Created Successfully"
 }
 
 ##########
@@ -55,8 +91,8 @@ compile-folder() {
 
     project_dest=$(sed "s/src/out/g" <<< $SRC)
 
-    rsync -qrvzcl --delete "$SRC/static/"* "$project_dest"
-    printf " COPY %s -> %s\n" "$SRC/static/" "$(readlink -f $project_dest)"
+    rsync -qrvzcl --delete "./static/"* "$project_dest"
+    printf " COPY %s -> %s\n" "./static/" "$(readlink -f $project_dest)"
 }
 
 function format-page {
@@ -65,6 +101,24 @@ function format-page {
         echo -e "$i"
     done
     echo -e "---\n"
+}
+
+##########
+# Extract YAML headers from file
+#
+# Arguments:
+#   Path to file
+# Returns:
+#   Prints formatted YAML to STDOUT
+##########
+extract-headers(){
+    awk -F ':' \
+    '/title:/    { title = $2 }
+    /author:/   { author = $2 }
+    /date:/     { ("date +\"%B %d, %Y\" -d\x27"$2"\x27" | getline date) }
+    /summary:/  { summary = $2 }
+
+    END         { printf "%s:%s:%s:%s:%s\n", date, title, author, summary, FILENAME }' $1
 }
 
 ##########
@@ -82,7 +136,8 @@ create-blogroll() {
     local readonly TMPFILE=$(mktemp)
     format-page "title: $title" > $TMPFILE
     for f in "$src"/*.md;do
-        ./scripts/extract_headers.awk "$f"
+        #./scripts/extract_headers.awk "$f"
+        extract-headers "$f"
     done | sort -k3nr -k1Mr -k2nr | sed "s@$(dirname $src)/@@g" | awk -F ':' \
     '{ gsub(".md",".html");
     printf "<h4 class=\"blog-roll\"> [%s](/%s) </h4>\n", $2, $5
@@ -134,8 +189,12 @@ END { print "</urlset>"}'
 }
 
 main() {
-    while getopts ":hvdpo:b:r:s:t:T:n:x:f:" opt; do
+    while getopts ":hvdpo:b:r:s:t:T:n:x:f:e:" opt; do
         case $opt in
+            p)
+                new-post
+                exit 0
+                ;;
             h)
                 # Print Usage
                 usage
@@ -184,7 +243,7 @@ main() {
                 readonly TARGET
                 ;;
             T)
-                # Set sitename for Sitemap Generator
+                # Set title for blogroll
                 readonly BLOGROLL_TITLE="$OPTARG"
                 ;;
             n)
@@ -211,7 +270,7 @@ main() {
 
     ### SET DEFAULTS AND READONLY STATUS
     : "${OUTPUT:=out/}"
-    : "${THEME:=$TARGET/theme/base.html}"
+    : "${THEME:=./theme/base.html}"
     readonly OUTPUT
     readonly THEME
 
@@ -226,8 +285,7 @@ main() {
         compile-folder $TARGET $OUTPUT
 
     elif [[ ${TASK:-} == 'r' ]]; then
-        : "${BLOGROLL_TITLE:-Blog Posts}"
-        create-blogroll "$TARGET" "$OUTPUT" "$BLOGROLL_TITLE"
+        create-blogroll "$TARGET" "$OUTPUT" "${BLOGROLL_TITLE:-Blog Posts}"
 
     elif [[ ${TASK:-} == 'f' ]]; then
         if [[ -z ${SITENAME:-} ]];then
