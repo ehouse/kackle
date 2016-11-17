@@ -20,6 +20,7 @@ usage(){
     echo " -o  : Set output folder (Default: out/)"
     echo " -e  : Set theme file (Default: theme/base.html)"
     echo " -t  : Test settings for -f flag. Disables compression and restrictive robots.txt"
+    echo " -T  : Set title for blogroll"
     echo " -n  : Sitename for sitemap generator"
     echo " -h  : Show help menu"
     echo " -v  : Set Verbose"
@@ -73,15 +74,16 @@ function format-page {
 #   Source folder to build
 ##########
 create-blogroll() {
-    local SRC=$1
+    local src="$1"
+    local title="$3"
 
-    rm -f $SRC/index.md
+    rm -f $src/index.md
 
-    TMPFILE=$(mktemp)
-    format-page "title: Blog Posts" > $TMPFILE
-    for f in "$SRC"/*.md;do
+    local readonly TMPFILE=$(mktemp)
+    format-page "title: $title" > $TMPFILE
+    for f in "$src"/*.md;do
         ./scripts/extract_headers.awk "$f"
-    done | sort -k3nr -k1Mr -k2nr | sed "s@$(dirname $SRC)/@@g" | awk -F ':' \
+    done | sort -k3nr -k1Mr -k2nr | sed "s@$(dirname $src)/@@g" | awk -F ':' \
     '{ gsub(".md",".html");
     printf "<h4 class=\"blog-roll\"> [%s](/%s) </h4>\n", $2, $5
     printf "<ul><li style=\"display:inline-block;margin-right:1em;\">_Written by %s_</li><li style=\"display:inline-block;margin-right:1em;\"><time>Posted on %s</time></li></ul>\n\n", $3, $1
@@ -89,8 +91,8 @@ create-blogroll() {
         printf "%s\n\n", $4
     print "---\n"}' | head -n -2 >> $TMPFILE
 
-    cp $TMPFILE $SRC/index.md
-    printf " CREATE index.md -> %s\n" "$(readlink -f $SRC/index.md)"
+    cp $TMPFILE $src/index.md
+    printf " CREATE index.md -> %s\n" "$(readlink -f $src/index.md)"
 }
 
 ##########
@@ -132,7 +134,7 @@ END { print "</urlset>"}'
 }
 
 main() {
-    while getopts ":hvdpo:b:r:s:t:n:x:f:" opt; do
+    while getopts ":hvdpo:b:r:s:t:T:n:x:f:" opt; do
         case $opt in
             h)
                 # Print Usage
@@ -181,6 +183,10 @@ main() {
                 readonly TASK
                 readonly TARGET
                 ;;
+            T)
+                # Set sitename for Sitemap Generator
+                readonly BLOGROLL_TITLE="$OPTARG"
+                ;;
             n)
                 # Set sitename for Sitemap Generator
                 readonly SITENAME="$OPTARG"
@@ -220,7 +226,8 @@ main() {
         compile-folder $TARGET $OUTPUT
 
     elif [[ ${TASK:-} == 'r' ]]; then
-        create-blogroll $TARGET $OUTPUT
+        : "${BLOGROLL_TITLE:-Blog Posts}"
+        create-blogroll "$TARGET" "$OUTPUT" "$BLOGROLL_TITLE"
 
     elif [[ ${TASK:-} == 'f' ]]; then
         if [[ -z ${SITENAME:-} ]];then

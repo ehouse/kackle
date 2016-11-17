@@ -8,11 +8,17 @@ all: usage
 new-post:
 	@./scripts/write_post.sh
 
-%:
+###########################
+### ADD NEW SITES BELOW ###
+###########################
+
+sample:
 	# Build Blogroll index
-	@./scripts/kackle -r "src/$@/blog"
+	@./scripts/kackle -r "src/$@/blog" -T "Blog Index"
 	# Build Blog
 	@./scripts/kackle -b "src/$@"
+
+###########################
 
 deploy-%:
 	# Finalize Webdir for Deployment
@@ -34,4 +40,4 @@ usage:
 	@echo "  make new-post          Interactively create new blog post"
 	@echo "  make clean             Clean out/ folder"
 
-.PHONY: all new-post deploy clean
+.PHONY: all new-post dev-% finish-% clean
