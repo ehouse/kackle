@@ -10,22 +10,40 @@ command -v pandoc >/dev/null 2>&1 || { echo >&2 "I require Pandoc but it's not i
 ### GLOBAL VALUES
 PROD=1
 
+#####
+# Print Usage Documents
+# Arguments:
+#   If varliable $1 is set, print long help
+#####
 usage(){
-    echo "USAGE: [-vhdp] (-b TARGET [-e THEME.html] |-r TARGET |-f SRC [-t] -n SITENAME) [-o OUTPUT]"
-    echo "Page Generation"
-    echo " -b  : Build target folder"
-    echo " -r  : Build blogroll of target folder"
-    echo " -f  : Finalize folder for deployment by writing out robots.txt, sitemap.xml, and compresses folder"
-    echo " -p  : Creates new post based on defaults and user answers"
-    echo "Optional"
-    echo " -o  : Set output folder (Default: out/)"
-    echo " -e  : Set theme file (Default: theme/base.html)"
-    echo " -t  : Test settings for -f flag. Disables compression and restrictive robots.txt"
-    echo " -T  : Set title for blogroll"
-    echo " -n  : Sitename for sitemap generator"
-    echo " -h  : Show help menu"
-    echo " -v  : Set Verbose"
-    echo " -d  : Set Bash debug mode"
+    echo "USAGE: [-vhd] -b TARGET [-e THEME.html] [-o OUTPUT]"
+    echo "              -r TARGET [-T TITLE] [-o OUTPUT]"
+    echo "              -f SRC [-t] [-N SITENAME] [-x FOLDER] [-o OUTPUT]"
+    echo "              -p"
+    if [[ -z ${1:-} ]];then
+        return
+    fi
+    echo
+    echo "Content Generation"
+    echo " -b folder : Build target folder"
+    echo " -r folder : Build blogroll of target folder"
+    echo " -f folder : Finalize folder for deployment by writing out robots.txt, sitemap.xml, and compresses folder"
+    echo " -p        : Creates new post based on defaults and user answers"
+    echo
+    echo "Content Generators Options"
+    echo " -N title  : Sitename for sitemap generator"
+    echo " -T title  : Set title for blogroll"
+    echo " -t        : Test settings for -f flag. Disables compression and restrictive robots.txt"
+    echo " -x folder : Exclude folders from sitemap. Option can be repeated."
+    echo
+    echo "Input/Output Settings"
+    echo " -o folder : Set output folder (Default: out/)"
+    echo " -e file   : Set theme file (Default: theme/base.html)"
+    echo
+    echo "Usage and Debug"
+    echo " -h        : Show help menu"
+    echo " -v        : Set Verbose"
+    echo " -d        : Set Bash debug mode"
 }
 
 new-post(){
@@ -152,8 +170,8 @@ create-blogroll() {
 
 ##########
 # Finalize webdir for deployment
-# If -t is set then robots.txt blocks entire site and nothing is compressed.
-# else robots.txt blocks /drafts and everything is compressed using htmlcompressor.
+#   If -t is set then robots.txt blocks entire site and nothing is compressed.
+#   else robots.txt blocks /drafts and everything is compressed using htmlcompressor.
 # Arguments:
 #   Source folder to compress
 #   Sitename for sitemap.xml
@@ -183,13 +201,36 @@ END { print "</urlset>"}'
         printf " CREATE DEV robots.txt -> %s\n" "$(readlink -f $target/robots.txt)"
     fi
 
-    printf " COMPRESSING %s\n" "$(readlink -f $target)"
-    command -v htmlcompressor >/dev/null 2>&1 || { echo >&2 "htmlcompressor required to compress $target folder!"; exit 1; }
-    find -L "$target" \( -name "*.html" -or -name "*.css" \) -exec htmlcompressor --compress-js --compress-css {} -o {} \;
+    if (("$PROD"))  && [[ ! -z $(command -v htmlcompressor) ]];then
+        printf " COMPRESSING %s\n" "$(readlink -f $target)"
+        command -v htmlcompressor >/dev/null 2>&1 || { echo >&2 "htmlcompressor required to compress $target folder!"; exit 1; }
+        find -L "$target" \( -name "*.html" -or -name "*.css" \) -exec htmlcompressor --compress-js --compress-css {} -o {} \;
+    fi
 }
 
 main() {
-    while getopts ":hvdpo:b:r:s:t:T:n:x:f:e:" opt; do
+
+    ##### Kackle Arguments Descriptions
+    ### Debug and Usage Docs
+    # h  - Prints Usages Docs
+    # v  - Enable Verbose Mode
+    # d  - Enable Debug Mode
+    ### Outputs or Generates Content
+    # b: - Builds Folder. Takes Valid Path
+    # r: - Builds Blogroll on Folder. Takes Valid Path
+    # f: - Finalize Folder for Deployment, generates robots.txt and sitemap. Takes Valid Path
+    # p  - Creates New Blog Post
+    ### Settings for Content Generation
+    # T: - Sets Title for Blogroll.
+    # N: - Sets Sitename for Sitemap Generation.
+    # x: - Sets folder exclude from Sitemap.
+    #   Not Implemented
+    # t: - Sets Testing State for Deployment. Sets robots.txt to block everything.
+    ### Kackle Input/Output Settings
+    # e: - Set Site Theme File Location.
+    # o: - Sets output folder. Takes Valid Path
+    #####
+    while getopts ":hvdpo:b:r:t:T:N:x:f:e:" opt; do
         case $opt in
             p)
                 new-post
@@ -197,7 +238,7 @@ main() {
                 ;;
             h)
                 # Print Usage
-                usage
+                usage "long"
                 exit 0
                 ;;
             v)
@@ -246,7 +287,7 @@ main() {
                 # Set title for blogroll
                 readonly BLOGROLL_TITLE="$OPTARG"
                 ;;
-            n)
+            N)
                 # Set sitename for Sitemap Generator
                 readonly SITENAME="$OPTARG"
                 ;;
