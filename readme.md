@@ -28,15 +28,13 @@ your machine.
 ```
 [ehouse@myon-2 kackle]$ cd sample
 [ehouse@myon-2 sample]$ make
-# Build Blogroll index
- CREATE index.md -> /Users/ehouse/Projects/kackle/sample/src/blog/index.md
-# Build Blog
- BUILD src/blog/index.md -> /Users/ehouse/Projects/kackle/sample/out/blog/index.html
- BUILD src/blog/post1.md -> /Users/ehouse/Projects/kackle/sample/out/blog/post1.html
- BUILD src/blog/post2.md -> /Users/ehouse/Projects/kackle/sample/out/blog/post2.html
- BUILD src/blog/post3.md -> /Users/ehouse/Projects/kackle/sample/out/blog/post3.html
- BUILD src/index.md -> /Users/ehouse/Projects/kackle/sample/out/index.html
- COPY ./static/ -> /Users/ehouse/Projects/kackle/sample/out
+  CREATE index.md -> /Users/ehouse/Projects/kackle/sample/src/blog/index.md
+  BUILD src/blog/index.md -> /Users/ehouse/Projects/kackle/sample/out/blog/index.html
+  BUILD src/blog/post1.md -> /Users/ehouse/Projects/kackle/sample/out/blog/post1.html
+  BUILD src/blog/post2.md -> /Users/ehouse/Projects/kackle/sample/out/blog/post2.html
+  BUILD src/blog/post3.md -> /Users/ehouse/Projects/kackle/sample/out/blog/post3.html
+  BUILD src/index.md -> /Users/ehouse/Projects/kackle/sample/out/index.html
+  COPY ./static/ -> /Users/ehouse/Projects/kackle/sample/out
 ```
 
 ### Design
