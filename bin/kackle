@@ -173,17 +173,18 @@ create-blogroll() {
     local -r TITLE="$3"
     local -r AWK_HTML=\
 '{ gsub(".md",".html");
-printf "<h4 class=\"blog-roll\"> [%s](/%s) </h4>\n", $2, $5
-printf "<ul><li style=\"display:inline-block;margin-right:1em;\">_Written by %s_</li><li style=\"display:inline-block;margin-right:1em;\"><time>Posted on %s</time></li></ul>\n\n", $3, $1
+printf "<article class=\"post\">\n"
+printf "<h4 class=\"post-title\"> [%s](/%s) </h4>\n", $2, $5
+printf "<ul class=\"post-header\"><li class=\"post-author\">Written by %s</li><li class=\"post-date\"><time>Posted on %s</time></li></ul>\n", $3, $1
 if ($3)
-    printf "%s\n\n", $4
-    print "---\n"}'
+    printf "<p class=\"post-summary\">%s</p>\n", $4
+printf "</article>\n\n"}'
 
     local -r TMPFILE=$(mktemp)
     local f
     local a
 
-    rm "$SRC/index.md"
+    rm -f "$SRC/index.md"
     format-page "title: $TITLE" > $TMPFILE
     for f in "$SRC"/*.md;do
         # If file is excluded then skip
@@ -196,7 +197,6 @@ if ($3)
     done | sort -k3nr -k1Mr -k2nr \
         | sed "s@$(dirname $SRC)/@@g" \
         | awk -F ':' "$AWK_HTML" \
-        | head -n -2 \
         >> $TMPFILE
 
     cp $TMPFILE $SRC/index.md

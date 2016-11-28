@@ -1,5 +1,5 @@
 ---
-title: Second Blog Post
+title: Final Blog Post
 author: Ethan House
 date: Oct 6, 2016
 summary: When I orbited the Earth in a spaceship, I saw for the first time how beautiful our planet is. Mankind, let us preserve and increase this beauty, and not destroy it!
@@ -33,5 +33,3 @@ There can be no thought of finishing for ‘aiming for the stars.’ Both
 figuratively and literally, it is a task to occupy the generations. And no
 matter how much progress one makes, there is always the thrill of just
 beginning.
-
-[<- Back](/blog)

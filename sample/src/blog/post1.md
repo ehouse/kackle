@@ -2,7 +2,7 @@
 title: First Post!
 author: Ethan House
 date: Sep 12, 2016
-summary: NASA is not about the ‘Adventure of Human Space Exploration’…We won’t be doing it just to get out there in space – we’ll be doing it because the things we learn out there will be making life better for a lot of people who won’t be able to go.
+summary: NASA is not about the ‘Adventure of Human Space Exploration’...We won’t be doing it just to get out there in space – we’ll be doing it because the things we learn out there will be making life better for a lot of people who won’t be able to go.
 ---
 
 NASA is not about the ‘Adventure of Human Space Exploration’…We won’t be doing
@@ -20,5 +20,3 @@ civilizations, to boldly go where no man has gone before.
 
 What was most significant about the lunar voyage was not that man set foot on
 the Moon but that they set eye on the earth.
-
-[<- Back](/blog)

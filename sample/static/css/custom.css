@@ -1,22 +1,99 @@
-nav {
-    text-align:right;
-    margin-top:5%;
+a {
+    text-decoration: none;
 }
 
-nav ul li {
-    display:inline-block;
+a:hover {
+    text-decoration: underline;
 }
 
-nav ul li a {
-    font-size: 1.7em;
-    padding: .75em 1em;
+.site-navigation {
+    margin-top: 2em;
 }
 
-article {
-    margin-top:5%;
+.site-navigation ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: flex-end;
 }
 
-.header ul li {
-    display:inline-block;
+.site-navigation ul li {
+    margin-bottom: 0;
+}
+
+.site-navigation a {
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    padding: 1rem;
+    font-size: 3rem;
+}
+
+.site-navigation a:hover {
+    background: #d4d4d4;
+}
+
+@media all and (max-width: 600px) {
+  .site-navigation ul {
+    /**
+     * Full width navigation items
+     */
+    flex-flow: column wrap;
+    padding: 0;
+  }
+}
+
+.page {
+    border-bottom: 1px solid #E1E1E1;
+    margin-bottom: 2em;
+}
+
+.page-title {
+    border-bottom: 1px solid #999;
+}
+
+.post {
+    border-bottom: 1px solid #E1E1E1;
+    margin-bottom: 2em;
+}
+
+.post:last-child {
+    border-bottom: none;
+}
+
+.post-title {
+    margin-bottom: .5rem;
+}
+
+.post-header {
+    margin-bottom: 2rem;
+}
+
+.post-author {
     margin-right: 1em;
+    display:inline-block;
+    font-style: italic
+}
+
+.post-date{
+    display:inline-block;
+}
+
+.page-footer {
+    text-align: center;
+    color: #808080;
+}
+
+.page-footer ul {
+    margin: 0;
+}
+
+.page-footer ul li {
+    display: inline;
+    margin: 0 2rem;
+}
+
+.page-footer p {
+    margin: 0;
 }
