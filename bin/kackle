@@ -22,7 +22,6 @@ usage(){
 USAGE: [-vhd] -b TARGET [-e THEME.html] [-o OUTPUT]
               -r TARGET [-T TITLE] [-o OUTPUT]
               -f SRC [-t] [-N SITENAME] [-x FOLDER] [-o OUTPUT]
-              -p
 EOM
     if [[ -z ${1:-} ]];then
         return
@@ -34,6 +33,7 @@ Content Generation
  -r folder : Build blogroll of target folder
  -f folder : Finalize folder for deployment by writing out robots.txt, sitemap.xml, and compresses folder
  -p        : Creates new post based on defaults and user answers
+ -s        : Creates skeleton kackle project
 
 Content Generators Options
  -N title  : Sitename for sitemap generator
@@ -93,6 +93,15 @@ END     { print "\nContent of my super awesome blog post!" }'
         >> $p_file
 
     echo "File $(pwd)/$p_file Created Successfully"
+}
+
+
+##########
+# Generates skeleton project file
+##########
+copy-skel() {
+    printf "  Creating Skeleton Project"
+    cp -r $(dirname $(dirname "$0"))/skel/* $(pwd)/
 }
 
 ##########
@@ -279,7 +288,7 @@ END { print "</urlset>"}'
 # o: - Sets output folder. Takes Valid Path
 #####
 main() {
-    while getopts ":hvdpo:b:r:t:T:N:x:f:e:" opt; do
+    while getopts ":hvdpo:b:r:t:T:N:x:f:e:s" opt; do
         case $opt in
             p)
                 new-post
@@ -324,6 +333,11 @@ main() {
                 # Create Blogroll
                 local -r TASK="r"
                 local -r TARGET=$OPTARG
+                ;;
+            s)
+                # Create skeleton project
+                copy-skel
+                exit 0
                 ;;
             T)
                 # Set title for blogroll

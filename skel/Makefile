@@ -12,7 +12,7 @@ clean:
 	rm -rf $(wildcard out/*)
 
 deploy:
-	@kackle -f "out/" -n "$(SITENAME)"
+	@kackle -f "out/" -N "$(SITENAME)"
 	rsync -e ssh -P --delete --max-delete=100 -rvzcl "out/" $(WEBSERVER):$(DEPLOY_DIR)/$(SITENAME) --cvs-exclude
 
 dev:
