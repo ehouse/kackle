@@ -1,12 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
+### Required to work on Mac OS.
 if [[ $(uname) == "Darwin" ]];then
     PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 fi
 
 command -v pandoc >/dev/null 2>&1 \
     || { echo >&2 "I require Pandoc but it's not installed.  Aborting."; exit 1; }
+
+command -v htmlcompressor >/dev/null 2>&1 \
+    || { echo >&2 "Can't find htmlcompressor. Won't Compress output.  Continuing."; }
+
+command -v gpp >/dev/null 2>&1 \
+    || { echo >&2 "Can't locate gpp. No pre-processor support.  Continuing."; }
 
 ### GLOBAL VALUES
 PROD=1
@@ -15,7 +22,7 @@ EXCLUDE=()
 #####
 # Print Usage Documents
 # Arguments:
-#   If varliable $1 is set, print long help
+#   If variable $1 is set, print long help
 #####
 usage(){
     cat <<- EOM
@@ -105,25 +112,47 @@ copy-skel() {
 }
 
 ##########
-# Compiles folder and sends to output location
+# Compile individual file
+#   Won't build if output,theme same age as input.
+#   Makes no assumtions, all arguments required.
+# Arguments:
+#   Input File path
+#   Output File path
+#   Theme File path
+##########
+build-file() {
+    local -r IN=$1
+    local -r OUT=$2
+    local -r THEME=$3
+
+    if [[ ! -d $(dirname $OUT) ]]; then
+        mkdir -p $(dirname $OUT)
+    fi
+
+    if [[ "$IN" -nt "$OUT" ]] || [[ "$THEME" -nt "$OUT" ]]; then
+        gpp -H "$IN" | pandoc --template "$THEME" -f markdown -o "$OUT"
+        printf "  BUILD %s -> %s\n" "$IN" "$(readlink -f $OUT)"
+    fi
+}
+
+##########
+# Build folder and sends to output location
+#   Dummy Wrapper around build-file
 # Arguments:
 #   Source folder to be built
 #   Output folder
+#   Theme file to use
 ##########
-compile-folder() {
+build-folder() {
     local -r SRC=$1
     local -r OUT=$2
+    local -r THEME=$3
 
     local -r MD_FILES=($(find -L $SRC -name "*.md"))
     local -r BLD_FILES=($(sed "s@src@"${OUT}"@g;s@.md@.html@g" <<< ${MD_FILES[@]}))
 
     local i
     local a
-
-    if ! [[ -f $THEME ]]; then
-        echo "Missing $THEME file"
-        exit 1
-    fi
 
     for ((i=0; i<${#BLD_FILES[@]};++i)); do
         # If file is excluded then skip
@@ -132,11 +161,7 @@ compile-folder() {
                 continue 2
             fi
         done
-        mkdir -p $(dirname "${BLD_FILES[i]}")
-        if [[ "${MD_FILES[i]}" -nt "${BLD_FILES[i]}" ]] || [[ "$THEME" -nt "${BLD_FILES[i]}" ]];then
-            pandoc --template $THEME "${MD_FILES[i]}" -o "${BLD_FILES[i]}"
-            printf "  BUILD %s -> %s\n" "${MD_FILES[i]}" "$(readlink -f ${BLD_FILES[i]})"
-        fi
+        build-file "${MD_FILES[i]}" "${BLD_FILES[i]}" "$THEME"
     done
 
     local -r PROJECT_DEST=$(sed "s/src/out/g" <<< $SRC)
@@ -377,7 +402,7 @@ main() {
 
     # Run Build Commands
     if [[ ${TASK:-} == "b" ]]; then
-        compile-folder $TARGET $OUTPUT
+        build-folder "$TARGET" "$OUTPUT" "$THEME"
 
     elif [[ ${TASK:-} == 'r' ]]; then
         create-blogroll "$TARGET" "$OUTPUT" "${BLOGROLL_TITLE:-Blog Posts}"
