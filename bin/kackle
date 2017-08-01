@@ -46,7 +46,7 @@ Content Generators Options
  -N title  : Sitename for sitemap generator
  -T title  : Set title for blogroll
  -t        : Test settings for -f flag. Disables compression and restrictive robots.txt
- -x regex  : Excludes files or folder using greedy regex. Option can be repeated
+ -x regex  : Excludes files or folder using greedy regex. Flag can be repeated
 
 Input/Output Settings
  -o folder : Set output folder (Default: out/)
@@ -292,26 +292,6 @@ END { print "</urlset>"}'
     fi
 }
 
-##### Kackle Arguments Descriptions
-### Debug and Usage Docs
-# h  - Prints Usages Docs
-# v  - Enable Verbose Mode
-# d  - Enable Debug Mode
-### Outputs or Generates Content
-# b: - Builds Folder. Takes Valid Path
-# r: - Builds Blogroll on Folder. Takes Valid Path
-# f: - Finalize Folder for Deployment, generates robots.txt and sitemap. Takes Valid Path
-# p  - Creates New Blog Post
-### Settings for Content Generation
-# T: - Sets Title for Blogroll.
-# N: - Sets Sitename for Sitemap Generation.
-# x: - Sets file/folder exclude from build process.
-#   Not Implemented
-# t: - Sets Testing State for Deployment. Sets robots.txt to block everything.
-### Kackle Input/Output Settings
-# e: - Set Site Theme File Location.
-# o: - Sets output folder. Takes Valid Path
-#####
 main() {
     while getopts ":hvdpo:b:r:t:T:N:x:f:e:s" opt; do
         case $opt in
