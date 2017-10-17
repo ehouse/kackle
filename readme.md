@@ -5,8 +5,6 @@ have a configurationless site generator not reliant on huge languages or their
 dependencies. Kackle only requires libraries anyone is going to have laying
 around their Linux/\*BSD system.
 
-**Warning** I've only ever tested this on my laptop. Your millage may vary.
-
 ### Downloading
 Head over to the github releases page
 [here](https://github.com/ehouse/kackle/releases) to pickup the most recent
@@ -21,9 +19,8 @@ release. Checkout the master branch if you're brave ok with things breaking.
 
 ### Setup
 
-Add `export PATH=$PATH:$HOME/Projects/kackle/scripts` to your zshrc or bashrc
-file. Replace `/Projects/kackle/bin` with the location of the project on
-your machine.
+Add `kackle/bin` to your path and you're good to go. Run `kackle -s` to create a
+skeleton project in the current working directory.
 
 ```
 [ehouse@myon-2 kackle]$ cd sample
@@ -44,13 +41,3 @@ simple, easily hackable and only offers what you see. No fancy bells or
 whistles to distract you from what matters, writing content.
 
 Assuming everything works the first time ;)
-
-### Hacking
-
-The Makefile in sample is purely a wrapper around the kackle shell script
-within the `scripts/` folder. The following command will manually build a
-folder with a given template and place it in the `./out` folder.
-
-``` bash
-kackle -b src/sample -o ./out -t ./src/sample/theme/base.html
-```
