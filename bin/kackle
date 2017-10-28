@@ -293,7 +293,7 @@ END { print "</urlset>"}'
 }
 
 main() {
-    while getopts ":hvdpo:b:r:t:T:N:x:f:e:s" opt; do
+    while getopts ":hvdpo:b:r:tT:N:x:f:e:s" opt; do
         case $opt in
             p)
                 new-post
