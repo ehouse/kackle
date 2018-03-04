@@ -1,0 +1,6 @@
+fatal(){
+}
+warning(){
+}
+info(){
+}
