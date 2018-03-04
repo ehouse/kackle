@@ -1,6 +1,0 @@
-fatal(){
-}
-warning(){
-}
-info(){
-}

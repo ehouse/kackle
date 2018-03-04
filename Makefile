@@ -4,7 +4,7 @@ build: bin/kackle
 
 bin/kackle: $(wildcard src/*.sh)
 	mkdir -p bin
-	cp src/kackle.sh bin/kackle
+	./build.sh kackle.sh
 	chmod +x bin/kackle
 
 test:
