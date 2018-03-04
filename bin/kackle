@@ -15,12 +15,12 @@ command -v htmlcompressor >/dev/null 2>&1 \
 command -v gpp >/dev/null 2>&1 \
     || { echo >&2 "Can't locate gpp. No pre-processor support.  Continuing."; }
 
-### GLOBAL VALUES
+### R/W Stateful Global Variables
 PROD=1
 EXCLUDE=()
 
 #####
-# Print Usage Documents
+# Print Usage Documents, either short or long
 # Arguments:
 #   If variable $1 is set, print long help
 #####
@@ -59,6 +59,12 @@ Usage and Debug
 EOM
 }
 
+#############################################################
+# Runs through set of questions to create a new blog post
+#
+# Arguments:
+#  None
+#############################################################
 new-post(){
     default_location="drafts"
     default_author="Ethan House"
@@ -103,23 +109,27 @@ END     { print "\nContent of my super awesome blog post!" }'
 }
 
 
-##########
-# Generates skeleton project file
-##########
+##########################################
+# Generates skeleton project folder
+#
+# Arguments:
+#  None
+##########################################
 copy-skel() {
     printf "  Creating Skeleton Project"
     cp -r $(dirname $(dirname "$0"))/skel/* $(pwd)/
 }
 
-##########
-# Compile individual file
+########################################################
+# Compile individual markdown file
 #   Won't build if output,theme same age as input.
-#   Makes no assumtions, all arguments required.
+#   Makes no assumptions, all arguments required.
+#
 # Arguments:
 #   Input File path
 #   Output File path
 #   Theme File path
-##########
+########################################################
 build-file() {
     local -r IN=$1
     local -r OUT=$2
@@ -135,14 +145,15 @@ build-file() {
     fi
 }
 
-##########
-# Build folder and sends to output location
+#######################################################
+# Loop over folder building all its content
 #   Dummy Wrapper around build-file
+#
 # Arguments:
 #   Source folder to be built
 #   Output folder
 #   Theme file to use
-##########
+#######################################################
 build-folder() {
     local -r SRC=$1
     local -r OUT=$2
@@ -170,6 +181,12 @@ build-folder() {
     printf "  COPY %s -> %s\n" "./static/" "$(readlink -f $PROJECT_DEST)"
 }
 
+##########################################################
+# Create pseudo YAML header from supplied argument array
+#
+# Arguments:
+#  Array of strings
+##########################################################
 function format-page {
     echo -e "---"
     for i in "$@";do
@@ -178,14 +195,14 @@ function format-page {
     echo -e "---\n"
 }
 
-##########
+#####################################################
 # Extract YAML headers from file
 #
 # Arguments:
 #   Path to file
 # Returns:
 #   Prints formatted YAML to STDOUT
-##########
+#####################################################
 extract-headers(){
     awk -F ':' \
     '/title:/    { title = $2 }
@@ -196,12 +213,13 @@ extract-headers(){
     END         { printf "%s:%s:%s:%s:%s\n", date, title, author, summary, FILENAME }' $1
 }
 
-##########
-# Create blogroll index of a folder.
+#######################################################
+# Create blogroll index of a folder
 #   Requires properly formatted YAML headers
+#
 # Arguments:
 #   Source folder to build
-##########
+#######################################################
 create-blogroll() {
     local -r SRC="$1"
     local -r TITLE="$3"
@@ -237,14 +255,15 @@ printf "</article>\n\n"}'
     printf "  CREATE index.md -> %s\n" "$(readlink -f $SRC/index.md)"
 }
 
-##########
-# Finalize webdir for deployment
+########################################################################################
+# Finalize output directory for deployment to production type servers
 #   If -t is set then robots.txt blocks entire site and nothing is compressed.
 #   else robots.txt blocks /drafts and everything is compressed using htmlcompressor.
+#
 # Arguments:
 #   Source folder to compress
 #   Sitename for sitemap.xml
-##########
+########################################################################################
 finalize-webdir() {
     local -r TARGET=$1
     local -r SITENAME=$2
@@ -325,7 +344,7 @@ main() {
                 local -r THEME_O="$OPTARG"
                 ;;
             f)
-                # Finialize folder for deployment
+                # Finalize folder for deployment
                 local -r TASK="f"
                 local -r TARGET=$OPTARG
                 ;;
