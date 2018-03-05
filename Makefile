@@ -8,7 +8,7 @@ bin/kackle: $(wildcard src/*.sh)
 	chmod +x bin/kackle
 
 test:
-	shellcheck $(wildcard src/*.sh)
+	shellcheck -x $(wildcard src/*.sh)
 
 .PHONY: test
 

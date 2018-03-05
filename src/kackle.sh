@@ -12,12 +12,6 @@ fi
 command -v pandoc >/dev/null 2>&1 \
     || logging::fatal "Pandoc binary not found!"
 
-command -v htmlcompressor >/dev/null 2>&1 \
-    || { echo >&2 "Can't find htmlcompressor. Won't Compress output.  Continuing."; }
-
-command -v gpp >/dev/null 2>&1 \
-    || { echo >&2 "Can't locate gpp. No pre-processor support.  Continuing."; }
-
 ### R/W Stateful Global Variables
 PROD=1
 EXCLUDE=()
@@ -37,9 +31,9 @@ new-post(){
         { printf "---\ntitle: %s\ndate: %s\nauthor: %s\nsummary: %s\n---", $1, $2, $3, "Example Blog Post" }
 END     { print "\nContent of my super awesome blog post!" }'
 
-    read -rp "Name of page: " p_title
-    read -rp "Location of page [$default_location]: " p_location
-    read -rp "Author [$default_author]: " p_author
+    read -p "Name of page: " p_title
+    read -p "Location of page [$default_location]: " p_location
+    read -p "Author [$default_author]: " p_author
 
     # Sets defaults if given value is NULL
     local -r p_location=${p_location:-$default_location}
@@ -47,19 +41,19 @@ END     { print "\nContent of my super awesome blog post!" }'
     local -r p_date=$(gdate +"%B %d, %Y")
 
     # Ensures no illegal/bad characters are written to disk
-    local -r p_ondisk=$(echo "$p_title" \
+    local -r p_ondisk=$(echo $p_title \
         | tr " " - \
         | tr '[:upper:]' '[:lower:]' \
         | perl -p -e  's/[^A-Za-z0-9\-\.]//g;')
 
     # Ensures html safe encodings are used
-    local -r p_title=$(echo "$p_title" \
+    local -r p_title=$(echo $p_title \
         | perl -n -mHTML::Entities -e ' ; print HTML::Entities::encode_entities($_) ;')
 
     local -r p_file="./$p_location/$p_ondisk.md"
 
-    if [[ ! -d $(dirname "$p_file") ]];then
-        echo "Folder $(pwd)/$(dirname \"$p_file\") doesn't exist. Can't Create $p_file"
+    if [[ ! -d $(dirname $p_file) ]];then
+        echo "Folder $(pwd)/$(dirname $p_file) doesn't exist. Can't Create $p_file"
         exit 1
     fi
 
@@ -98,12 +92,12 @@ build-file() {
     local -r OUT=$2
     local -r THEME=$3
 
-    if [[ ! -d $(dirname "$OUT") ]]; then
-        mkdir -p $(dirname "$OUT")
+    if [[ ! -d $(dirname $OUT) ]]; then
+        mkdir -p $(dirname $OUT)
     fi
 
     if [[ "$IN" -nt "$OUT" ]] || [[ "$THEME" -nt "$OUT" ]]; then
-        gpp -H "$IN" | pandoc --template "$THEME" -f markdown -o "$OUT"
+        cat "$IN" | pandoc --template "$THEME" -f markdown -o "$OUT"
         printf "  BUILD %s -> %s\n" "$IN" "$(readlink -f $OUT)"
     fi
 }
@@ -122,23 +116,23 @@ build-folder() {
     local -r OUT=$2
     local -r THEME=$3
 
-    local -r MD_FILES=($(find -L "$SRC" -name "*.md"))
-    local -r BLD_FILES=($(sed "s@src@${OUT}@g;s@.md@.html@g" <<< "${MD_FILES[@]}"))
+    local -r MD_FILES=($(find -L $SRC -name "*.md"))
+    local -r BLD_FILES=($(sed "s@src@${OUT}@g;s@.md@.html@g" <<< ${MD_FILES[@]}))
 
     local i
     local a
 
-    for ((i=0; i<"${#BLD_FILES[@]}";++i)); do
+    for ((i=0; i<${#BLD_FILES[@]};++i)); do
         # If file is excluded then skip
-        for a in "${EXCLUDE[@]:-}"; do
-            if [[ "${BLD_FILES[i]}" =~ $a ]]; then
+        for a in ${EXCLUDE[@]:-}; do
+            if [[ ${BLD_FILES[i]} =~ $a ]]; then
                 continue 2
             fi
         done
         build-file "${MD_FILES[i]}" "${BLD_FILES[i]}" "$THEME"
     done
 
-    local -r PROJECT_DEST=$(sed "s/src/out/g" <<< "$SRC")
+    local -r PROJECT_DEST=$(sed "s/src/out/g" <<< $SRC)
 
     rsync -qrvzcl --delete "./static/"* "$PROJECT_DEST"
     printf "  COPY %s -> %s\n" "./static/" "$(readlink -f $PROJECT_DEST)"
@@ -173,7 +167,7 @@ extract-headers(){
     /date:/     { ("date +\"%B %d, %Y\" -d\x27"$2"\x27" | getline date) }
     /summary:/  { summary = $2 }
 
-    END         { printf "%s:%s:%s:%s:%s\n", date, title, author, summary, FILENAME }' "$1"
+    END         { printf "%s:%s:%s:%s:%s\n", date, title, author, summary, FILENAME }' $1
 }
 
 #######################################################
@@ -200,10 +194,10 @@ printf "</article>\n\n"}'
     local a
 
     rm -f "$SRC/index.md"
-    format-page "title: $TITLE" > "$TMPFILE"
+    format-page "title: $TITLE" > $TMPFILE
     for f in "$SRC"/*.md;do
         # If file is excluded then skip
-        for a in "${EXCLUDE[@]:-}"; do
+        for a in ${EXCLUDE[@]:-}; do
             if [[ $i =~ $f ]]; then
                 continue 2
             fi
@@ -212,9 +206,9 @@ printf "</article>\n\n"}'
     done | sort -k3nr -k1Mr -k2nr \
         | sed "s@$(dirname $SRC)/@@g" \
         | awk -F ':' "$AWK_HTML" \
-        >> "$TMPFILE"
+        >> $TMPFILE
 
-    cp "$TMPFILE" "$SRC/index.md"
+    cp $TMPFILE $SRC/index.md
     printf "  CREATE index.md -> %s\n" "$(readlink -f $SRC/index.md)"
 }
 
@@ -239,13 +233,13 @@ finalize-webdir() {
     { printf "\t<url>\n\t\t<loc>%s</loc>\n\t\t<changefreq>weekly</changefreq>\n\t</url>\n", $NF }
 END { print "</urlset>"}'
 
-    local -r BLD_FILES=($(find -L "$TARGET" -name "*.html"))
+    local -r BLD_FILES=($(find -L $TARGET -name "*.html"))
     local i # Index for BLD_FILES
     local fd # Local file descriptor
 
-    for i in "${BLD_FILES[@]:-}"; do
+    for i in ${BLD_FILES[@]:-}; do
         # If file is excluded then skip
-        for a in "${EXCLUDE[@]:-}"; do
+        for a in ${EXCLUDE[@]:-}; do
             if [[ $i =~ $a ]]; then
                 continue 2
             fi
@@ -254,7 +248,7 @@ END { print "</urlset>"}'
             | sed "s@$TARGET/@https://$SITENAME/@g")
         echo "$fd"
     done | awk -F"\n" "$AWK_SCRIPT" \
-        > "$TARGET/sitemap.xml"
+        > $TARGET/sitemap.xml
 
     printf "  CREATE sitemap.xml -> %s\n" "$(readlink -f $TARGET/sitemap.xml)"
 
@@ -375,7 +369,7 @@ main() {
             echo "Sitename required for finalization"
             exit 1
         fi
-        finalize-webdir "$TARGET" "$SITENAME"
+        finalize-webdir $TARGET $SITENAME
     fi
 }
 
