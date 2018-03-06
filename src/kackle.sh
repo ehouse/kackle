@@ -8,12 +8,15 @@ fi
 
 . ./lib/logging.sh
 . ./lib/helpdoc.sh
+. ./lib/config.sh
 
 command -v pandoc >/dev/null 2>&1 \
     || logging::fatal "Pandoc binary not found!"
 
 ### R/W Stateful Global Variables
+# Current prod build state
 PROD=1
+# Files/Folder exlude array
 EXCLUDE=()
 
 #############################################################
@@ -23,22 +26,19 @@ EXCLUDE=()
 #  None
 #############################################################
 new-post(){
-    default_location="drafts"
-    default_author="Ethan House"
-
     local -r AWK_HEADERS=\
 'BEGIN   { FS=":"; OFS="\n"}
         { printf "---\ntitle: %s\ndate: %s\nauthor: %s\nsummary: %s\n---", $1, $2, $3, "Example Blog Post" }
-END     { print "\nContent of my super awesome blog post!" }'
+END     { print "\n\nContent of my super awesome blog post!" }'
 
     read -p "Name of page: " p_title
-    read -p "Location of page [$default_location]: " p_location
-    read -p "Author [$default_author]: " p_author
+    read -p "Location of page [$_config_draft_location]: " p_location
+    read -p "Author [$_config_draft_author]: " p_author
 
     # Sets defaults if given value is NULL
-    local -r p_location=${p_location:-$default_location}
-    local -r p_author=${p_author:-$default_author}
-    local -r p_date=$(gdate +"%B %d, %Y")
+    local -r p_location=${p_location:-$_config_draft_location}
+    local -r p_author=${p_author:-$_config_draft_author}
+    local -r p_date=$(date +"%B %d, %Y")
 
     # Ensures no illegal/bad characters are written to disk
     local -r p_ondisk=$(echo $p_title \
@@ -50,7 +50,7 @@ END     { print "\nContent of my super awesome blog post!" }'
     local -r p_title=$(echo $p_title \
         | perl -n -mHTML::Entities -e ' ; print HTML::Entities::encode_entities($_) ;')
 
-    local -r p_file="./$p_location/$p_ondisk.md"
+    local -r p_file="$p_location/$p_ondisk.md"
 
     if [[ ! -d $(dirname $p_file) ]];then
         echo "Folder $(pwd)/$(dirname $p_file) doesn't exist. Can't Create $p_file"
