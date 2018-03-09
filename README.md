@@ -1,9 +1,9 @@
 ## Kackle Static Site Generator
 
-Kackle was designed to be simple and easily extendible. It came from a desire to
-have a configurationless site generator not reliant on huge languages or their
-dependencies. Kackle only requires libraries anyone is going to have laying
-around their Linux/\*BSD system.
+Kackle was designed for self reliance. No crazy language stacks to mange, no
+software dependencies to track. You shouldn't need 100M of libraries to publish
+a blog or website. With Kackle it only depends on languages found on a base
+install of OpenBSD.
 
 ### Downloading
 Head over to the github releases page
@@ -11,11 +11,11 @@ Head over to the github releases page
 release. Checkout the master branch if you're brave ok with things breaking.
 
 ### Dependencies
-- `gnu-coreutils`: Required for building.
-- `pandoc`: Compile markdown to html.
+- `gnu-coreutils`: Required for building
+- `pandoc`: Compile markdown to html
 - `gnu-make`: Required for running Makefile.
-- `rsync`: Used for deploying but could be replaced with anything.
-- `htmlcompressor`: Very optional, easily disabled in Makefile. Used for minifying html and css.
+- `HTML::Entities`: Optional, ensures web safe filenames
+- `HTML::Packer`: Optional, compress outputted HTML
 
 ### Setup
 
@@ -34,6 +34,9 @@ skeleton project in the current working directory.
   COPY ./static/ -> /Users/ehouse/Projects/kackle/sample/out
 ```
 
+New posts can be created with `kackle -p` command. It will run through a set of
+questions to setup a new post.
+
 ### Design
 
 Kackle fits two use cases that few other static site generators aim to hit. It's
@@ -41,3 +44,6 @@ simple, easily hackable and only offers what you see. No fancy bells or
 whistles to distract you from what matters, writing content.
 
 Assuming everything works the first time ;)
+
+### But why?
+Not every software project needs a purpose. 
