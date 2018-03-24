@@ -6,9 +6,10 @@ if [[ $(uname) == "Darwin" ]];then
     PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 fi
 
+. ./lib/config.sh
 . ./lib/logging.sh
 . ./lib/helpdoc.sh
-. ./lib/config.sh
+. ./lib/minify.sh
 
 command -v pandoc >/dev/null 2>&1 \
     || logging::fatal "Pandoc binary not found!"
@@ -252,7 +253,7 @@ END { print "</urlset>"}'
 
     printf "  CREATE sitemap.xml -> %s\n" "$(readlink -f $TARGET/sitemap.xml)"
 
-    if (("$PROD")) ;then
+    if [[ "$PROD" ]] ;then
         echo -e "User-Agent: *\nDisallow: /drafts/" > "$TARGET/robots.txt"
         printf "  CREATE PROD robots.txt -> %s\n" "$(readlink -f $TARGET/robots.txt)"
     else
@@ -260,12 +261,11 @@ END { print "</urlset>"}'
         printf "  CREATE DEV robots.txt -> %s\n" "$(readlink -f $TARGET/robots.txt)"
     fi
 
-    if (("$PROD"))  && [[ ! -z $(command -v htmlcompressor) ]];then
-        printf "  COMPRESSING %s\n" "$(readlink -f $TARGET)"
-        command -v htmlcompressor >/dev/null 2>&1 \
-            || { echo >&2 "htmlcompressor required to compress $TARGET folder!"; exit 1; }
-        find -L "$TARGET" \( -name "*.html" -or -name "*.css" \) \
-            -exec htmlcompressor --compress-js --compress-css {} -o {} \;
+    if [[ "$PROD" ]] && [[ "$_config_minimize_files" ]];then
+        printf "  MINIFYING directory $TARGET*/(*.html|*.css)\n"
+        find -L "$TARGET" \( -name "*.html" -or -name "*.css" \)|while read fname; do
+            minify::file "$fname"
+        done
     fi
 }
 
