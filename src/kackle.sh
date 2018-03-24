@@ -41,13 +41,13 @@ END     { print "\n\nContent of my super awesome blog post!" }'
     local -r p_author=${p_author:-$_config_draft_author}
     local -r p_date=$(date +"%B %d, %Y")
 
-    # Ensures no illegal/bad characters are written to disk
+    # Normalize file name before writing to disk
     local -r p_ondisk=$(echo "$p_title" \
         | tr " " - \
         | tr '[:upper:]' '[:lower:]' \
         | perl -p -e  's/[^A-Za-z0-9\-\.]//g;')
 
-    # Ensures html safe encodings are used
+    # Ensures html safe encodings are used for rendered metadata
     local -r p_title=$(echo "$p_title" \
         | perl -n -mHTML::Entities -e ' ; print HTML::Entities::encode_entities($_) ;')
 
@@ -184,16 +184,25 @@ create-blogroll() {
     local -r AWK_HTML=\
 '{ gsub(".md",".html");
 printf "<article class=\"post\">\n"
-printf "<h4 class=\"post-title\"> [%s](/%s) </h4>\n", $2, $5
-printf "<ul class=\"post-header\"><li class=\"post-author\">Written by %s</li><li class=\"post-date\"><time>Posted on %s</time></li></ul>\n", $3, $1
+printf "<h4 class=\"post-title\"><a href=/%s>%s</a></h4>\n", $5, $2
+
+printf "<ul class=\"post-header\">"
 if ($3)
+    printf "<li class=\"post-author\">Written by %s</li>", $3
+if ($1)
+    printf "<li class=\"post-date\"><time>Posted on %s</time></li>", $1
+printf "</ul>\n"
+
+if ($4)
     printf "<p class=\"post-summary\">%s</p>\n", $4
 printf "</article>\n\n"}'
 
+    ### Create a temporary file to work with
     local -r TMPFILE=$(mktemp)
     local f
     local a
 
+    ### Blow away previously created blogroll index
     rm -f "$SRC/index.md"
     format-page "title: $TITLE" > "$TMPFILE"
     for f in "$SRC"/*.md;do
@@ -203,11 +212,15 @@ printf "</article>\n\n"}'
                 continue 2
             fi
         done
+        ### Extract the headers from working file
         extract-headers "$f"
     done | sort -k3nr -k1Mr -k2nr \
         | sed "s@$(dirname $SRC)/@@g" \
         | awk -F ':' "$AWK_HTML" \
         >> "$TMPFILE"
+    ### This fancy bit of logic above sorts the resulting articles by time descending order
+    ### Then removes the directory name in the links
+    ### Finally applies the AWK_HTML logic
 
     cp "$TMPFILE" "$SRC/index.md"
     printf "  CREATE index.md -> %s\n" "$(readlink -f $SRC/index.md)"
