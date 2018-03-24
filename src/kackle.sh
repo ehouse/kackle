@@ -42,19 +42,19 @@ END     { print "\n\nContent of my super awesome blog post!" }'
     local -r p_date=$(date +"%B %d, %Y")
 
     # Ensures no illegal/bad characters are written to disk
-    local -r p_ondisk=$(echo $p_title \
+    local -r p_ondisk=$(echo "$p_title" \
         | tr " " - \
         | tr '[:upper:]' '[:lower:]' \
         | perl -p -e  's/[^A-Za-z0-9\-\.]//g;')
 
     # Ensures html safe encodings are used
-    local -r p_title=$(echo $p_title \
+    local -r p_title=$(echo "$p_title" \
         | perl -n -mHTML::Entities -e ' ; print HTML::Entities::encode_entities($_) ;')
 
     local -r p_file="$p_location/$p_ondisk.md"
 
-    if [[ ! -d $(dirname $p_file) ]];then
-        echo "Folder $(pwd)/$(dirname $p_file) doesn't exist. Can't Create $p_file"
+    if [[ ! -d $(dirname "$p_file") ]];then
+        printf "Folder %s doesn't exist. Can't Create %s\n" "$(pwd)/$(dirname $p_file)" "$p_file"
         exit 1
     fi
 
@@ -93,12 +93,12 @@ build-file() {
     local -r OUT=$2
     local -r THEME=$3
 
-    if [[ ! -d $(dirname $OUT) ]]; then
-        mkdir -p $(dirname $OUT)
+    if [[ ! -d "$(dirname $OUT)" ]]; then
+        mkdir -p "$(dirname $OUT)"
     fi
 
     if [[ "$IN" -nt "$OUT" ]] || [[ "$THEME" -nt "$OUT" ]]; then
-        cat "$IN" | pandoc --template "$THEME" -f markdown -o "$OUT"
+        pandoc --template "$THEME" -f markdown -o "$OUT" < "$IN"
         printf "  BUILD %s -> %s\n" "$IN" "$(readlink -f $OUT)"
     fi
 }
@@ -117,8 +117,8 @@ build-folder() {
     local -r OUT=$2
     local -r THEME=$3
 
-    local -r MD_FILES=($(find -L $SRC -name "*.md"))
-    local -r BLD_FILES=($(sed "s@src@${OUT}@g;s@.md@.html@g" <<< ${MD_FILES[@]}))
+    local -r MD_FILES=($(find -L "$SRC" -name "*.md"))
+    local -r BLD_FILES=($(sed "s@src@${OUT}@g;s@.md@.html@g" <<< "${MD_FILES[@]}"))
 
     local i
     local a
@@ -133,7 +133,7 @@ build-folder() {
         build-file "${MD_FILES[i]}" "${BLD_FILES[i]}" "$THEME"
     done
 
-    local -r PROJECT_DEST=$(sed "s/src/out/g" <<< $SRC)
+    local -r PROJECT_DEST=$(sed "s/src/out/g" <<< "$SRC")
 
     rsync -qrvzcl --delete "./static/"* "$PROJECT_DEST"
     printf "  COPY %s -> %s\n" "./static/" "$(readlink -f $PROJECT_DEST)"
@@ -195,7 +195,7 @@ printf "</article>\n\n"}'
     local a
 
     rm -f "$SRC/index.md"
-    format-page "title: $TITLE" > $TMPFILE
+    format-page "title: $TITLE" > "$TMPFILE"
     for f in "$SRC"/*.md;do
         # If file is excluded then skip
         for a in ${EXCLUDE[@]:-}; do
@@ -207,9 +207,9 @@ printf "</article>\n\n"}'
     done | sort -k3nr -k1Mr -k2nr \
         | sed "s@$(dirname $SRC)/@@g" \
         | awk -F ':' "$AWK_HTML" \
-        >> $TMPFILE
+        >> "$TMPFILE"
 
-    cp $TMPFILE $SRC/index.md
+    cp "$TMPFILE" "$SRC/index.md"
     printf "  CREATE index.md -> %s\n" "$(readlink -f $SRC/index.md)"
 }
 
@@ -234,7 +234,7 @@ finalize-webdir() {
     { printf "\t<url>\n\t\t<loc>%s</loc>\n\t\t<changefreq>weekly</changefreq>\n\t</url>\n", $NF }
 END { print "</urlset>"}'
 
-    local -r BLD_FILES=($(find -L $TARGET -name "*.html"))
+    local -r BLD_FILES=($(find -L "$TARGET" -name "*.html"))
     local i # Index for BLD_FILES
     local fd # Local file descriptor
 
@@ -249,7 +249,7 @@ END { print "</urlset>"}'
             | sed "s@$TARGET/@https://$SITENAME/@g")
         echo "$fd"
     done | awk -F"\n" "$AWK_SCRIPT" \
-        > $TARGET/sitemap.xml
+        > "$TARGET/sitemap.xml"
 
     printf "  CREATE sitemap.xml -> %s\n" "$(readlink -f $TARGET/sitemap.xml)"
 
@@ -262,8 +262,8 @@ END { print "</urlset>"}'
     fi
 
     if [[ "$PROD" ]] && [[ "$_config_minimize_files" ]];then
-        printf "  MINIFYING directory $TARGET*/(*.html|*.css)\n"
-        find -L "$TARGET" \( -name "*.html" -or -name "*.css" \)|while read fname; do
+        printf "  MINIFYING directory %s*/(*.html|*.css)\n" "$TARGET"
+        find -L "$TARGET" \( -name "*.html" -or -name "*.css" \)|while read -r fname; do
             minify::file "$fname"
         done
     fi
@@ -369,7 +369,7 @@ main() {
             echo "Sitename required for finalization"
             exit 1
         fi
-        finalize-webdir $TARGET $SITENAME
+        finalize-webdir "$TARGET" "$SITENAME"
     fi
 }
 

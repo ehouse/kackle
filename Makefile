@@ -8,7 +8,14 @@ bin/kackle: $(wildcard src/*.sh) $(wildcard src/lib/*.sh)
 	@chmod +x bin/kackle
 
 test:
-	shellcheck -x $(wildcard src/*.sh)
+	$(shell cd src; shellcheck -x *.sh > ../shellcheck.txt)
+#$(shell cd src; shellcheck -x *.sh | tee ../shellcheck.txt >/dev/null)
+	@echo "Writing results of shellcheck to [./shellcheck.txt]"
+	@echo
+	@echo "Creating webserver at https://localhost:8080"
+	@echo "Exit webserver with <ctr-c>"
+	@echo
+	cd skel && make clean && make publish && make dev
 
 .PHONY: test
 
