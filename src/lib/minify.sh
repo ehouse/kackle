@@ -14,5 +14,3 @@ minify::file() {
             | tee $1 > /dev/null
     fi
 }
-
-minify::file "$1"
