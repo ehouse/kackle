@@ -23,8 +23,8 @@ Add `kackle/bin` to your path and you're good to go. Run `kackle -s` to create a
 skeleton project in the current working directory.
 
 ```
-[ehouse@myon-2 kackle]$ cd sample
-[ehouse@myon-2 sample]$ make
+[ehouse@myon kackle]$ cd sample
+[ehouse@myon sample]$ make
   CREATE index.md -> /Users/ehouse/Projects/kackle/sample/src/blog/index.md
   BUILD src/blog/index.md -> /Users/ehouse/Projects/kackle/sample/out/blog/index.html
   BUILD src/blog/post1.md -> /Users/ehouse/Projects/kackle/sample/out/blog/post1.html
@@ -46,4 +46,4 @@ whistles to distract you from what matters, writing content.
 Assuming everything works the first time ;)
 
 ### But why?
-Not every software project needs a purpose. 
+It was fun
