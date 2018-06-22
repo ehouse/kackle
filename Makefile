@@ -21,7 +21,9 @@ test:
 
 install: bin/kackle
 	mkdir -p $(HOME)/bin
-	cp bin/kackle $(HOME)/bin
+	#cp bin/kackle $(HOME)/bin
+	gzip -k docs/kackle.1
+	sudo cp docs/kackle.1.gz /usr/share/man/man1/kackle.1.gz
 
 .PHONY: install
 
