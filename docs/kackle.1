@@ -5,6 +5,7 @@
 .\"/usr/share/misc/mdoc.template
 .Dd June 22, 2018               \" DATE
 .Dt KACKLE 1      \" Program name and manual section number
+.An Ethan House (ehouse@fastmail.com)
 .Os
 .Sh NAME          \" Section Header - required - don't modify
 .Nm kackle
@@ -29,67 +30,95 @@
 .Fl p
 
 .Sh DESCRIPTION          \" Section Header - required - don't modify
-There are various modes under kackle can operate.
+Kackle is a simple static site generator with minimal dependencies in mind
+during development. Static sites can be setup in minutes and deployed via rysnc
+to any webserver. Never worry that a OS/Language update will break your build
+process, if it works now it'll work in a few years too.
 .Pp                      \" Inserts a space
 All of the following groups are mutually exclusive.
 
-.Ss Creating Content
+.Ss Creating a New Template Project
+New Kackle projects come with a src/, a statics/, and a theme/ folder. They
+contain the entire site, it's content and finally how it'll look when built. 
 .Bl -tag -width Fl   \" Begins a tagged list
 .It Fl s
-Create a new skeleton project with defaults
+Create a new project from a skeleton default. Comes with lots of defaults that
+should be modified for your use.
+.El                       \" Ends the list
+
+.Ss Generate a New Post
+A quick macro for generating a new site page.
+.Bl -tag -width Fl   \" Begins a tagged list
 .It Fl p
-Interactive menu for creating a new page under ./drafts/
+Interactive menu for creating a new page under the ./drafts/ folder.
 .El                       \" Ends the list
 
 .Ss Generate a Blogroll   \" Start sub-header for Blogroll
+A blogroll is a rolling index page of all the content in the folder, organized
+by it's publish date. After walking the directory a index.md file is generated
+with all of the posts and their summar.
 .Bl -tag -width Fl   \" Begins a tagged list
 .It Fl r Ar target
-Recurse through folder creating a blogroll
-.It Fl T Ar title
-Set blogroll page title to custom string
-.It Fl o Ar out/
-Set output destination
+Recurse through folder creating a blogroll of each post found within the
+folder. The blogroll will be written out to a index.html file.
+.It Op Fl T Ar title
+Set blogroll page title to custom string. This custom string is what appears as
+the post header for the blogroll page generated.
+.It Op Fl o Ar out/
+Set output destination folder
 .El                       \" Ends the list
 
 .Ss Build a Site          \" Start sub-header for Building
+Walk the directory of the folder, building all .md files into .html when
+discovered.
 .Bl -tag -width Fl   \" Begins a tagged list
 .It Fl b Ar target
-Recurse through folder compiling markdown to html
-.It Fl e Ar theme.html
-Override default theme with custome file
-.It Fl o Ar out/
-Set output destination
+Recurse through folder compiling markdown files to html
+.It Op Fl e Ar theme.html
+Override default theme with custom file. Check out the skeleton project for an
+example of a working theme file.
+.It Op Fl o Ar out/
+Set output destination folder
 .El                       \" Ends the list
 .Ss Finalize the Site     \" Start sub-header for Finalizing
+The final steps to take when deploying a Kackle site for public use. Generate a
+sitemap of all publicly accessible pages, generate a rebots.txt to prevent
+crawling of hidden pages. Finally compress css and html content to minimize
+site the sites footprint on disk.
 .Bl -tag -width Fl   \" Begins a tagged list
 .It Fl f Ar target
 Recurse through folder compiling markdown to html
-.It Fl t
-Flag to enable production level settings for final site building. Setting will enable site compression and generation of sitemap.
 .It Fl N Ar sitename
-Override for sitemap sitename
-.It Fl o Ar out/
-Set output destination
+Set sitemap sitename for sitemap
+.It Op Fl t
+Flag to enable production level settings for final site building. Setting will
+enable site compression and generation of sitemap.
+.It Op Fl o Ar out/
+Set output destination folder
 .El                       \" Ends the list
 
 .Sh OPTIONS
 .Bl -tag -width Fl   \" Begins a tagged list
 .It Fl x Ar file
-Exlude listed files or folders from target operation. Works for Blogroll, Building, and Finalization. Can be repeated any number of times.
+Exclude listed files or folders from target operation. Works for Blogroll,
+Building, and Finalization. Can be repeated any number of times. Default value
+is the /priv folder.
 .It Fl v
-Verbose output.
+Verbose output
 .It Fl h
-Print help document.
+Print help document
 .It Fl d
 Set bash -x tracing mode. Incredibly verbose
 .El                      \" Ends the list
 
 .Sh FILES                \" File used or created by the topic of the man page
-.Bl -tag -width 18n -compact
+.Bl -tag -width 20n -compact
 .It Pa ./src/kackle.sh
-Primary source file of kackle
+Primary source file of Kackle
 .It Pa ./src/lib
-Collection of library files which are compiled into kackle
+Collection of library files which are compiled into Kackle. Baked into kackle.sh when building the project.
+.It Pa ./src/lib/config.sh
+Project wide defaults for Kackle. Customize for your own personal use before baking into the project.
 .It Pa ./skel
 Base skeleton project to be copied when -s is used
 .El                      \" Ends the list
