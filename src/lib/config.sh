@@ -7,7 +7,7 @@
 _config_draft_location="drafts"
 
 # Default author for new draft posts
-_config_draft_author="Ethan House"
+_config_draft_author="Eve House"
 
 # Run HTML/CSS minifier across output
 _config_minimize_files=true

@@ -1,27 +1,31 @@
 #!/bin/bash
+set -euo pipefail
+
+### Required to work on Mac OS.
+if [[ $(uname) == "Darwin" ]];then
+    PATH="/usr/local/opt/coreutils/libexec/gnubin:/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+fi
 
 # Infile replaces file includes with the files original content
 
-cd src
+pushd ./src >/dev/null
+    # Build array of include locations with linenumbers
+    indexes=( $(awk '
+        /\. (\.\/lib\/\w)/  { AT[NR]=$2 }
+        END                 { for (key in AT) { print key, AT[key] }}
+        ' kackle.sh) )
 
-# Build array of include locations with linenumbers
-indexes=( $(awk '
-    /\. (\.\/lib\/\w)/  { AT[NR]=$2 }
-    END                 { for (key in AT) { print key, AT[key] }}
-    ' kackle.sh) )
+    cp ${1:-kackle.sh} .build.tmp
 
-cp ${1:-kackle.sh} inprocess.sh
+    for (( idx=${#indexes[@]}-1 ; idx>=0 ; idx-=2 )) ; do
+        IFS='%'
 
-for (( idx=${#indexes[@]}-1 ; idx>=0 ; idx-=2 )) ; do
-    IFS='%'
+        lineno="${indexes[idx-1]}"
+        filepath="${indexes[idx]}"
 
-    lineno="${indexes[idx-1]}"
-    filepath="${indexes[idx]}"
+        # Replace file include statements with linked file
+        sed -i "${lineno}s/.*/$(sed -e 's/[\&/]/\\&/g' -e 's/$/\\n/' $filepath | tr -d '\n')/" .build.tmp
+    done
+popd >/dev/null
 
-    # Replace file include statments with linked file
-    sed -i "${lineno}s/.*/$(sed -e 's/[\&/]/\\&/g' -e 's/$/\\n/' $filepath | tr -d '\n')/" inprocess.sh
-done
-
-cd ../
-
-mv src/inprocess.sh bin/kackle
+mv src/.build.tmp bin/kackle

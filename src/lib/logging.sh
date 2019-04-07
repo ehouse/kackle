@@ -16,7 +16,7 @@ logging::fatal() {
 #  Warning Message
 ############################
 logging::warning() {
-    local -r msg=${1:-"Proceding as usua"}
+    local -r msg=${1:-"Proceding as usual"}
     echo -e "WARNING: $msg"
 }
 

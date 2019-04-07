@@ -3,7 +3,7 @@ set -euo pipefail
 
 ### Required to work on Mac OS.
 if [[ $(uname) == "Darwin" ]];then
-    PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+    PATH="/usr/local/opt/coreutils/libexec/gnubin:/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 fi
 
 . ./lib/config.sh
