@@ -15,10 +15,8 @@ command -v pandoc >/dev/null 2>&1 \
     || logging::fatal "Pandoc binary not found!"
 
 ### R/W Stateful Global Variables
-# Current prod build state
-PROD=1
-# Files/Folder exlude array
-EXCLUDE=()
+_global_prod_state=1  # State of the current build. True for prod, false for stage/test
+_global_exclude=()    # Array of Files/Folder to be excluded
 
 #############################################################
 # Runs through set of questions to create a new blog post
@@ -118,22 +116,19 @@ build-folder() {
     local -r THEME=$3
 
     local -r MD_FILES=($(find -L "$SRC" -name "*.md"))
-    local -r BLD_FILES=($(sed "s@src@${OUT}@g;s@.md@.html@g" <<< "${MD_FILES[@]}"))
-
-    local i
-    local a
+    local -r BLD_FILES=($(sed "s@src@${OUT}@;s@.md\$@.html@" <<< "${MD_FILES[@]}"))
 
     for ((i=0; i<${#BLD_FILES[@]};++i)); do
         # If file is excluded then skip
-        for a in ${EXCLUDE[@]:-}; do
-            if [[ ${BLD_FILES[i]} =~ $a ]]; then
+        for exclude in ${_global_exclude[@]:-}; do
+            if [[ ${BLD_FILES[i]} =~ $exclude ]]; then
                 continue 2
             fi
         done
         build-file "${MD_FILES[i]}" "${BLD_FILES[i]}" "$THEME"
     done
 
-    local -r PROJECT_DEST=$(sed "s/src/out/g" <<< "$SRC")
+    local -r PROJECT_DEST=$(sed "s/src/out/" <<< "$SRC")
 
     rsync -qrvzcl --delete "./static/"* "$PROJECT_DEST"
     printf "  COPY %s -> %s\n" "./static/" "$(readlink -f $PROJECT_DEST)"
@@ -199,23 +194,21 @@ printf "</article>\n\n"}'
 
     ### Create a temporary file to work with
     local -r TMPFILE=$(mktemp)
-    local f
-    local a
 
     ### Blow away previously created blogroll index
     rm -f "$SRC/index.md"
     format-page "title: $TITLE" > "$TMPFILE"
-    for f in "$SRC"/*.md;do
+    for file in "$SRC"/*.md;do
         # If file is excluded then skip
-        for a in ${EXCLUDE[@]:-}; do
-            if [[ $i =~ $f ]]; then
+        for exclude in ${EXCLUDE[@]:-}; do
+            if [[ $file =~ $exclude ]]; then
                 continue 2
             fi
         done
         ### Extract the headers from working file
-        extract-headers "$f"
+        extract-headers "$file"
     done | sort -k3nr -k1Mr -k2nr \
-        | sed "s@$(dirname $SRC)/@@g" \
+        | sed "s@$(dirname $SRC)/@@" \
         | awk -F ':' "$AWK_HTML" \
         >> "$TMPFILE"
     ### This fancy bit of logic above sorts the resulting articles by time descending order
@@ -238,7 +231,7 @@ printf "</article>\n\n"}'
 finalize-webdir() {
     local -r TARGET=$1
     local -r SITENAME=$2
-    local -r AWK_SCRIPT=\
+    local -r SITEMAP_AWK=\
 'BEGIN { print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
 <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\
@@ -248,25 +241,25 @@ finalize-webdir() {
 END { print "</urlset>"}'
 
     local -r BLD_FILES=($(find -L "$TARGET" -name "*.html"))
-    local i # Index for BLD_FILES
-    local fd # Local file descriptor
+    local bld_index # Index for BLD_FILES
+    local page_path # Local file descriptor
 
-    for i in ${BLD_FILES[@]:-}; do
+    for $bld_index in ${BLD_FILES[@]:-}; do
         # If file is excluded then skip
-        for a in ${EXCLUDE[@]:-}; do
-            if [[ $i =~ $a ]]; then
+        for exclude in ${EXCLUDE[@]:-}; do
+            if [[ $bld_index =~ $exclude ]]; then
                 continue 2
             fi
         done
-        fd=$(echo $i \
-            | sed "s@$TARGET/@https://$SITENAME/@g")
-        echo "$fd"
-    done | awk -F"\n" "$AWK_SCRIPT" \
+        $page_path=$(echo $bld_index \
+            | sed "s@^$TARGET/@https://$SITENAME/@")
+        echo "$page_path"
+    done | awk -F"\n" "$SITEMAP_AWK" \
         > "$TARGET/sitemap.xml"
 
     printf "  CREATE sitemap.xml -> %s\n" "$(readlink -f $TARGET/sitemap.xml)"
 
-    if [[ "$PROD" ]] ;then
+    if [[ "$_global_prod_state" ]] ;then
         echo -e "User-Agent: *\nDisallow: /drafts/" > "$TARGET/robots.txt"
         printf "  CREATE PROD robots.txt -> %s\n" "$(readlink -f $TARGET/robots.txt)"
     else
@@ -274,7 +267,7 @@ END { print "</urlset>"}'
         printf "  CREATE DEV robots.txt -> %s\n" "$(readlink -f $TARGET/robots.txt)"
     fi
 
-    if [[ "$PROD" ]] && [[ "$_config_minimize_files" ]];then
+    if [[ "$_global_prod_state" ]] && [[ "$_config_minimize_files" ]];then
         printf "  MINIFYING directory %s*/(*.html|*.css)\n" "$TARGET"
         find -L "$TARGET" \( -name "*.html" -or -name "*.css" \)|while read -r fname; do
             minify::file "$fname"
@@ -304,7 +297,7 @@ main() {
                 ;;
             t)
                 # Set prod state
-                PROD=0
+                _global_prod_state=0
                 ;;
             o)
                 # Override default output folder
@@ -344,7 +337,7 @@ main() {
                 ;;
             x)
                 # Exclude folder from build process
-                EXCLUDE+=( $OPTARG )
+                _global_exclude+=( $OPTARG )
                 ;;
             \?)
                 echo "Invalid option: -$OPTARG" >&2
