@@ -6,13 +6,10 @@ if [[ $(uname) == "Darwin" ]];then
     PATH="/usr/local/opt/coreutils/libexec/gnubin:/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 fi
 
-. ./lib/config.sh
 . ./lib/logging.sh
 . ./lib/helpdoc.sh
 . ./lib/minify.sh
-
-command -v pandoc >/dev/null 2>&1 \
-    || logging::fatal "Pandoc binary not found!"
+. ./lib/config.sh
 
 ### R/W Stateful Global Variables
 _global_prod_state=1  # State of the current build. True for prod, false for stage/test
@@ -96,7 +93,7 @@ build-file() {
     fi
 
     if [[ "$IN" -nt "$OUT" ]] || [[ "$THEME" -nt "$OUT" ]]; then
-        pandoc --template "$THEME" -f markdown -o "$OUT" < "$IN"
+        $_config_render "$THEME" "$IN" > "$OUT"
         printf "  BUILD %s -> %s\n" "$IN" "$(readlink -f $OUT)"
     fi
 }

@@ -11,3 +11,5 @@ _config_draft_author="Eve House"
 
 # Run HTML/CSS minifier across output
 _config_minimize_files=true
+
+_config_render="./mrender.pl"
