@@ -244,7 +244,7 @@ END { print "</urlset>"}'
     local bld_index # Index for BLD_FILES
     local page_path # Local file descriptor
 
-    for $bld_index in ${BLD_FILES[@]:-}; do
+    for bld_index in ${BLD_FILES[@]:-}; do
         # If file is excluded then skip
         for exclude in ${EXCLUDE[@]:-}; do
             if [[ $bld_index =~ $exclude ]]; then
